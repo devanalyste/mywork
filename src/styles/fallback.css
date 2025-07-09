@@ -1,0 +1,1587 @@
+/* Geologica font import */
+@import url("https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap");
+
+/* CSS complet pour remplacer Tailwind */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Geologica", "Source Sans Pro", Helvetica, Arial, sans-serif;
+    background-color: #f3f4f6;
+    line-height: 1.6;
+}
+
+/* Classes utilitaires de base */
+.min-h-screen {
+    min-height: 100vh;
+}
+.bg-gray-100 {
+    background-color: #f3f4f6;
+}
+.font-sans {
+    font-family: "Geologica", Arial, sans-serif;
+}
+.antialiased {
+    -webkit-font-smoothing: antialiased;
+}
+.flex {
+    display: flex;
+}
+.flex-col {
+    flex-direction: column;
+}
+.flex-1 {
+    flex: 1;
+}
+.items-center {
+    align-items: center;
+}
+.justify-between {
+    justify-content: space-between;
+}
+.justify-center {
+    justify-content: center;
+}
+.space-x-4 > * + * {
+    margin-left: 1rem;
+}
+.space-x-3 > * + * {
+    margin-left: 0.75rem;
+}
+.space-x-2 > * + * {
+    margin-left: 0.5rem;
+}
+.space-y-2 > * + * {
+    margin-top: 0.5rem;
+}
+.gap-8 {
+    gap: 2rem;
+}
+.gap-2 {
+    gap: 0.5rem;
+}
+
+/* Padding et margin */
+.p-4 {
+    padding: 1rem;
+}
+.p-6 {
+    padding: 1.5rem;
+}
+.p-8 {
+    padding: 2rem;
+}
+.px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+.px-5 {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+}
+.py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+.py-3 {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+.mb-2 {
+    margin-bottom: 0.5rem;
+}
+.mb-4 {
+    margin-bottom: 1rem;
+}
+.mb-6 {
+    margin-bottom: 1.5rem;
+}
+.mb-8 {
+    margin-bottom: 2rem;
+}
+.mr-1 {
+    margin-right: 0.25rem;
+}
+.mr-2 {
+    margin-right: 0.5rem;
+}
+.mt-3 {
+    margin-top: 0.75rem;
+}
+.mt-4 {
+    margin-top: 1rem;
+}
+
+/* Couleurs de fond */
+.bg-white {
+    background-color: white;
+}
+.bg-gray-50 {
+    background-color: #f9fafb;
+}
+.bg-gray-700 {
+    background-color: #374151;
+}
+.bg-gray-900 {
+    background-color: #111827;
+}
+.bg-blue-600 {
+    background-color: #2563eb;
+}
+.bg-blue-700 {
+    background-color: #1d4ed8;
+}
+.bg-green-600 {
+    background-color: #059669;
+}
+.bg-green-700 {
+    background-color: #047857;
+}
+.bg-red-600 {
+    background-color: #dc2626;
+}
+.bg-red-700 {
+    background-color: #b91c1c;
+}
+.bg-purple-600 {
+    background-color: #9333ea;
+}
+.bg-purple-700 {
+    background-color: #7c3aed;
+}
+
+/* Couleurs de texte */
+.text-white {
+    color: white;
+}
+.text-gray-500 {
+    color: #6b7280;
+}
+.text-gray-700 {
+    color: #374151;
+}
+.text-gray-800 {
+    color: #1f2937;
+}
+.text-blue-700 {
+    color: #1d4ed8;
+}
+.text-red-600 {
+    color: #dc2626;
+}
+
+/* Bordures et arrondis */
+.border {
+    border: 1px solid #d1d5db;
+}
+.border-b-2 {
+    border-bottom: 2px solid #d1d5db;
+}
+.border-gray-200 {
+    border-color: #e5e7eb;
+}
+.rounded {
+    border-radius: 0.25rem;
+}
+.rounded-lg {
+    border-radius: 0.5rem;
+}
+.rounded-r-lg {
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
+
+/* Ombres */
+.shadow-md {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+.shadow-inner {
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Tailles */
+.w-full {
+    width: 100%;
+}
+.w-5 {
+    width: 1.25rem;
+}
+.h-5 {
+    height: 1.25rem;
+}
+.max-w-7xl {
+    max-width: 80rem;
+}
+.max-w-screen-2xl {
+    max-width: 1536px;
+}
+.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Typography */
+.text-xl {
+    font-size: 1.25rem;
+}
+.text-3xl {
+    font-size: 1.875rem;
+}
+.text-sm {
+    font-size: 0.875rem;
+}
+.font-bold {
+    font-weight: 700;
+}
+.font-extrabold {
+    font-weight: 800;
+}
+.line-through {
+    text-decoration: line-through;
+}
+
+/* Grid */
+.grid {
+    display: grid;
+}
+.grid-cols-1 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.md\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.lg\:grid-cols-4 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Focus et hover */
+.focus\:outline-none:focus {
+    outline: none;
+}
+.focus\:ring-2:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+.focus\:ring-blue-300:focus {
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.5);
+}
+.hover\:bg-gray-800:hover {
+    background-color: #1f2937;
+}
+.hover\:bg-blue-700:hover {
+    background-color: #1d4ed8;
+}
+.hover\:bg-green-700:hover {
+    background-color: #047857;
+}
+.hover\:bg-red-700:hover {
+    background-color: #b91c1c;
+}
+.hover\:bg-purple-700:hover {
+    background-color: #7c3aed;
+}
+
+/* Transition */
+.transition-all {
+    transition: all 0.3s ease;
+}
+
+/* Navbar spécifique */
+.navbar {
+    background-color: #111827;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    margin: 0 0.25rem;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.navbar button:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+.navbar button.active {
+    background-color: #374151;
+}
+
+/* Layout principal */
+.main-content {
+    display: flex;
+    flex: 1;
+    padding: 1.5rem;
+    max-width: 1536px;
+    margin: 0 auto;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-right: 2rem;
+    width: 300px;
+    height: fit-content;
+}
+
+/* Content area */
+.content-area {
+    flex: 1;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+}
+
+/* Formulaires */
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-family: inherit;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+input[readonly] {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+}
+
+/* Boutons */
+button {
+    cursor: pointer;
+    font-family: inherit;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Bouton de sauvegarde */
+.btn-save-data {
+    background-color: #059669;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-save-data:hover {
+    background-color: #047857;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Scrollbar personnalisée */
+.scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #a8a8a8;
+    border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+/* Responsive */
+@media (min-width: 640px) {
+    .sm\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 768px) {
+    .md\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .md\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .lg\:grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+/* Styles pour les modales */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+}
+
+/* Styles pour le Dashboard Maison */
+.dashboard-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.dashboard-title {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #4f46e5;
+    margin: 0;
+    font-family: "Geologica", Arial, sans-serif;
+}
+
+.admin-mode-btn {
+    background-color: #374151;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.admin-mode-btn:hover {
+    background-color: #1f2937;
+}
+
+.welcome-message {
+    color: #6b7280;
+    font-size: 1.125rem;
+    margin-bottom: 3rem;
+    margin-top: 0;
+}
+
+.overview-section {
+    width: 100%;
+}
+
+.overview-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #4f46e5;
+    margin-bottom: 2rem;
+    margin-top: 0;
+}
+
+.categories-container {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    width: 100%;
+}
+
+.tasks-header {
+    background-color: #e5e7eb;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #d1d5db;
+}
+
+.tasks-label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 1.125rem;
+}
+
+.category-section {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: white;
+    position: relative;
+    height: auto; /* Auto height */
+    z-index: 1; /* Base z-index */
+}
+
+.category-section:last-child {
+    border-bottom: none;
+}
+
+/* Augmenter le z-index lorsque la catégorie est ouverte */
+.category-section:has(.category-header[aria-expanded="true"]) {
+    z-index: 2; /* Higher z-index when open */
+}
+
+.tasks-free-grid {
+    width: 100%;
+    background-color: white;
+    z-index: 10;
+}
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    background-color: white;
+}
+
+.category-header:hover {
+    background-color: #f9fafb;
+}
+
+.category-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.category-toggle {
+    color: #4f46e5;
+    font-size: 1rem;
+    font-weight: bold;
+    width: 16px;
+    display: inline-block;
+}
+
+.category-name {
+    font-weight: 600;
+    color: #4f46e5;
+    font-size: 1.125rem;
+}
+
+.category-goto {
+    color: #4f46e5;
+    font-size: 1.25rem;
+    font-weight: bold;
+    background-color: #ede9fe;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tasks-list {
+    padding: 0 1.5rem 1rem 3rem;
+    background-color: white;
+}
+
+.task-item {
+    transform-style: preserve-3d;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0;
+    color: #374151;
+    box-shadow:
+        0 3px 2px rgba(0, 0, 0, 0.2),
+        0px 0px 5px rgba(0, 0, 0, 0.2);
+}
+
+.task-item.clickable {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.task-item.clickable:hover {
+    background-color: #f3f4f6;
+    border-radius: 0.25rem;
+}
+
+.task-bullet {
+    color: #6b7280;
+    font-weight: bold;
+}
+
+.task-name {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* Section Admin Dashboard */
+.admin-dashboard-section {
+    margin-bottom: 3rem;
+}
+
+.admin-banner {
+    background-color: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.admin-banner-text {
+    color: #92400e;
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin: 0;
+}
+
+.admin-manage-btn {
+    background-color: #b45309;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1rem;
+}
+
+.admin-manage-btn:hover {
+    background-color: #92400e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles pour le Panneau d'Administration */
+.admin-panel-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.admin-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.admin-panel-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #4f46e5;
+    margin: 0;
+}
+
+.admin-section {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.admin-section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 1.5rem 0;
+    padding: 1rem;
+    background-color: #fef3c7;
+    border-radius: 0.375rem;
+    border: 1px solid #f59e0b;
+}
+
+.admin-subsection-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #4f46e5;
+    margin: 0 0 1rem 0;
+    padding: 0.75rem;
+    background-color: #ede9fe;
+    border-radius: 0.375rem;
+}
+
+/* Gestion des onglets */
+.tabs-management {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.tab-management-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 0.375rem;
+    border: 1px solid #d1d5db;
+}
+
+.tab-name {
+    font-weight: 600;
+    color: #374151;
+    font-size: 1.125rem;
+}
+
+.tab-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-rename {
+    background-color: #2563eb;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-rename:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-delete {
+    background-color: #dc2626;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-delete:hover {
+    background-color: #b91c1c;
+}
+
+/* Formulaire d'ajout d'onglet */
+.add-tab-form {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.add-tab-input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+}
+
+.btn-add-tab {
+    background-color: #2563eb;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-add-tab:hover {
+    background-color: #1d4ed8;
+}
+
+/* Formulaire d'ajout de tâche */
+.add-task-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+}
+
+.form-input,
+.form-select {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    background-color: white;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-textarea {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    background-color: white;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.checkbox-label {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500 !important;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.btn-add-task {
+    background-color: #2563eb;
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: flex-start;
+}
+
+.btn-add-task:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Barre de recherche */
+.search-container {
+    margin-bottom: 2rem;
+}
+
+.search-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.search-bar:focus-within {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.search-icon {
+    font-size: 1.25rem;
+    margin-right: 0.75rem;
+    color: #6b7280;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    color: #374151;
+    background: transparent;
+    font-family: inherit;
+}
+
+.search-input::placeholder {
+    color: #9ca3af;
+}
+
+.search-clear {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 50%;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    margin-left: 0.5rem;
+}
+
+.search-clear:hover {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.search-results-info {
+    margin-top: 0.75rem;
+    padding: 0.5rem 1rem;
+    background-color: #f0f9ff;
+    border: 1px solid #0ea5e9;
+    border-radius: 0.5rem;
+    color: #0c4a6e;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.search-hints {
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+.search-hint {
+    font-size: 0.75rem;
+    color: #6b7280;
+    background-color: #f9fafb;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid #e5e7eb;
+}
+
+/* ===== STYLES DRAG & DROP ===== */
+
+/* Zones de drop pour les tâches */
+.task-drop-zone {
+    width: 100%;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.task-drop-zone:hover {
+    background-color: #3b82f6 !important;
+    height: 4px !important;
+}
+
+.task-drop-zone.active {
+    background-color: #3b82f6;
+    height: 4px;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+/* Améliorations pour les éléments draggables */
+.draggable {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.draggable:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.draggable[draggable="true"]:active {
+    cursor: grabbing;
+}
+
+/* Indicateur de drag over pour les catégories */
+.category-section.drag-over {
+    background-color: #eff6ff;
+    border: 2px dashed #3b82f6;
+    border-radius: 8px;
+}
+
+.category-section.drag-over .category-header {
+    background-color: #dbeafe;
+}
+
+/* Style pour les handles de drag */
+.drag-handle {
+    cursor: grab;
+    color: #9ca3af;
+    font-size: 0.875rem;
+    margin-right: 0.5rem;
+    user-select: none;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.drag-handle:hover {
+    color: #6b7280;
+    background-color: #f3f4f6;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+    color: #374151;
+}
+
+/* Zone de drop pour catégorie vide */
+.empty-category-drop-zone {
+    padding: 1.5rem;
+    text-align: center;
+    color: #9ca3af;
+    font-style: italic;
+    background-color: #f9fafb;
+    border: 2px dashed #d1d5db;
+    border-radius: 6px;
+    margin: 0.5rem 0;
+    transition: all 0.2s ease;
+}
+
+.empty-category-drop-zone:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+    color: #6b7280;
+}
+
+/* === DRAG & DROP STRICT INTRA-CATÉGORIE === */
+
+/* Zones de drop inactives (catégories différentes) */
+.task-drop-zone-vertical:not(.drag-over):not(:hover) {
+    cursor: not-allowed;
+}
+
+.task-drop-zone-vertical.blocked-drop {
+    cursor: not-allowed !important;
+    background-color: #fef2f2 !important;
+    border: 2px dashed #ef4444 !important;
+    opacity: 0.5;
+}
+
+.task-drop-zone-vertical.blocked-drop::before {
+    background-color: #ef4444 !important;
+    animation: none !important;
+}
+
+.task-drop-zone-vertical.blocked-drop::after {
+    content: "❌ Drop inter-catégories bloqué" !important;
+    background: #ef4444 !important;
+    color: white !important;
+    animation: none !important;
+}
+
+/* Catégories inactives pendant le drag inter-catégories */
+.category-section.different-category-drag {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.category-section.different-category-drag .category-header {
+    background-color: #f9fafb;
+    color: #9ca3af;
+}
+
+.category-section.same-category-drag {
+    opacity: 1;
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.03), rgba(59, 130, 246, 0.08));
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 8px;
+}
+
+.category-section.same-category-drag .category-header {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Empty drop zone inactive */
+.empty-category-drop-zone.blocked-drop {
+    cursor: not-allowed !important;
+    background-color: #fef2f2 !important;
+    color: #9ca3af !important;
+    border: 2px dashed #ef4444 !important;
+    opacity: 0.5;
+}
+
+.empty-category-drop-zone.blocked-drop::before {
+    content: "❌ Drop inter-catégories non autorisé";
+    color: #ef4444;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* === FIN DRAG & DROP STRICT === */
+
+/* === LAYOUT EN GRILLE RESPONSIVE POUR LES TÂCHES === */
+
+/* Conteneur principal de la grille - Mobile first */
+.tasks-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 10px;
+    padding: 8px;
+    position: relative;
+}
+
+/* Small screens - 2 colonnes */
+@media (min-width: 640px) {
+    .tasks-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Medium screens - 3 colonnes */
+@media (min-width: 768px) {
+    .tasks-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Large screens - 4 colonnes */
+@media (min-width: 1024px) {
+    .tasks-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Élément de grille pour chaque tâche */
+.task-grid-item {
+    position: relative;
+    min-height: 55px;
+    margin-bottom: 8px; /* Espacement entre les tâches pour faciliter le drop */
+}
+
+/* Tâche en mode compact */
+.task-item.compact {
+    padding: 6px 8px !important;
+    margin: 0 !important;
+    min-height: 45px;
+    border-radius: 6px;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.task-item.compact:hover {
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+/* Contenu de la tâche en mode compact */
+.task-content-compact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+/* Handle compact */
+.compact-handle {
+    padding: 4px 6px !important;
+    margin-right: 4px !important;
+    font-size: 10px !important;
+    min-width: 20px !important;
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+}
+
+.compact-handle:hover {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    transform: scale(1.1);
+}
+
+/* Informations de la tâche */
+.task-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0; /* Pour permettre le text-overflow */
+}
+
+.task-number {
+    font-size: 11px;
+    font-weight: bold;
+    color: #3b82f6;
+    background-color: #eff6ff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    align-self: flex-start;
+}
+
+.task-name-compact {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* === ZONES DE DROP VERTICALES AMÉLIORÉES === */
+
+/* Zone de drop avant chaque tâche */
+.task-drop-zone-vertical {
+    position: absolute;
+    top: -8px;
+    left: 0;
+    right: 0;
+    height: 16px;
+    background-color: transparent;
+    transition: all 0.2s ease;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ligne d'insertion visible */
+.task-drop-zone-vertical::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background-color: transparent;
+    border-radius: 2px;
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+}
+
+/* État de survol/drag */
+.task-drop-zone-vertical:hover::before,
+.task-drop-zone-vertical.drag-over::before {
+    background-color: #3b82f6;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+/* Indicateur de position avec flèches */
+.task-drop-zone-vertical:hover::after,
+.task-drop-zone-vertical.drag-over::after {
+    content: "▼ Insérer ici ▼";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    background: #3b82f6;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+    z-index: 20;
+    animation: pulse-insert 1s infinite;
+}
+
+@keyframes pulse-insert {
+    0%,
+    100% {
+        opacity: 0.8;
+        transform: translateX(-50%) translateY(-50%) scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-50%) scale(1.05);
+    }
+}
+
+/* Zone de drop finale améliorée */
+.task-drop-zone-final {
+    grid-column: 1 / -1; /* Prend toute la largeur */
+    height: 24px;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    background-color: #f9fafb;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #6b7280;
+    margin: 8px 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.task-drop-zone-final:hover,
+.category-section.drag-over .task-drop-zone-final,
+.task-drop-zone-final.drag-over {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    color: #3b82f6;
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.task-drop-zone-final::before {
+    content: "⬇️ Ajouter à la fin de cette catégorie";
+    opacity: 0;
+    transition: all 0.3s ease;
+    transform: translateY(4px);
+}
+
+.task-drop-zone-final:hover::before,
+.category-section.drag-over .task-drop-zone-final::before,
+.task-drop-zone-final.drag-over::before {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Message pour catégorie vide en mode grille */
+.empty-category-drop-zone.grid-full-width {
+    grid-column: 1 / -1;
+    padding: 32px;
+    font-size: 14px;
+}
+
+/* === RESPONSIVE === */
+
+/* Sur tablettes, 3 colonnes */
+@media (max-width: 1200px) {
+    .tasks-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+}
+
+/* Sur petits écrans, 2 colonnes */
+@media (max-width: 768px) {
+    .tasks-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+
+    .task-item.compact {
+        min-height: 50px;
+    }
+
+    .task-name-compact {
+        font-size: 12px;
+    }
+}
+
+/* Sur très petits écrans, 1 colonne */
+@media (max-width: 480px) {
+    .tasks-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .task-name-compact {
+        font-size: 14px;
+    }
+}
+
+/* === AMÉLIORATIONS DRAG & DROP EN GRILLE === */
+
+/* Tâche en cours de drag en mode compact */
+.task-item.compact[draggable="true"]:active {
+    opacity: 0.8 !important;
+    transform: rotate(1deg) scale(1.05) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+    z-index: 1000;
+    border-color: #10b981 !important;
+}
+
+/* Indicateurs de position lors du drag */
+.category-section.drag-over .task-drop-zone-vertical {
+    animation: dropZonePulse 1s infinite;
+}
+
+@keyframes dropZonePulse {
+    0%,
+    100% {
+        border-color: #3b82f6;
+        background-color: rgba(59, 130, 246, 0.1);
+    }
+    50% {
+        border-color: #1d4ed8;
+        background-color: rgba(59, 130, 246, 0.2);
+    }
+}
+
+/* === FIN LAYOUT GRILLE === */
+
+/* === STYLES POUR REACT DND === */
+
+/* État dragging pour les tâches */
+.task-item.dragging {
+    opacity: 0.6 !important;
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+}
+
+/* Indicateurs de drop React DND */
+.drop-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    z-index: 20;
+    animation: pulse-drop 1.5s infinite;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.drop-indicator.final {
+    background: linear-gradient(135deg, #10b981, #059669);
+    animation: pulse-final 1.5s infinite;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+@keyframes pulse-drop {
+    0%,
+    100% {
+        opacity: 0.9;
+        transform: translateX(-50%) translateY(-50%) scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-50%) scale(1.05);
+    }
+}
+
+@keyframes pulse-final {
+    0%,
+    100% {
+        opacity: 0.9;
+        transform: translateX(-50%) translateY(-50%) scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-50%) scale(1.08);
+    }
+}
+
+/* Zone de drop pour catégories vides - React DND */
+.empty-drop-indicator {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    z-index: 20;
+    animation: bounce-empty 2s infinite;
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+}
+
+@keyframes bounce-empty {
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    40% {
+        transform: translateX(-50%) translateY(-5px);
+    }
+    60% {
+        transform: translateX(-50%) translateY(-3px);
+    }
+}
+
+/* Améliorations des zones de drop React DND */
+.task-drop-zone-vertical.drag-over::before {
+    background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
+    height: 3px;
+}
+
+.task-drop-zone-vertical.final.drag-over {
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 2px dashed #10b981;
+    border-radius: 8px;
+    height: 24px;
+}
+
+.empty-category-drop-zone.drag-over {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1));
+    border-color: #f59e0b;
+    transform: scale(1.02);
+}
