@@ -40,7 +40,16 @@ const SortableTaskItem = ({ task, onTaskClick }) => {
             style={style}
             className={`task-item clickable compact grid-task ${isDragging ? 'dragging' : ''}`}
             onClick={() => onTaskClick(task)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onTaskClick(task);
+                }
+            }}
+            role="button"
+            tabIndex={0}
             title="Glissez pour réorganiser"
+            aria-label={`Task: ${task.name}`}
         >
             <div className="task-content-compact">
                 <span
@@ -57,24 +66,33 @@ const SortableTaskItem = ({ task, onTaskClick }) => {
                     </span>
                     <span className="task-name-compact">
                         {task.name}
+    return (
+        <div
+            className="task-item clickable compact grid-task"
+            onClick={() => onTaskClick(task)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    onTaskClick(task);
+                                }
+                            }}
+                            role="button"
+                            tabIndex={0}
+            title="Cliquez pour voir les détails"
+                            aria-label={`Task: ${task.name}`}
+        >
+            <div className="task-content-compact">
+                <div className="task-info">
+                    <span className="task-number">
+                        {task.fields?.find(f => f.key === 'modelNumber')?.value}
+                    </span>
+                    <span className="task-name-compact">
+                        {task.name}
                     </span>
                 </div>
             </div>
         </div>
     );
-};
-
-// Composant Task simple (sans drag & drop pour comparaison)
-const TaskItem = ({ task, onTaskClick }) => {
-    return (
-        <div
-            className="task-item clickable compact grid-task"
-            onClick={() => onTaskClick(task)}
-            title="Cliquez pour voir les détails"
-        >
-            <div className="task-content-compact">
-                <div className="task-info">
-                    <span className="task-number">
                         {task.fields?.find(f => f.key === 'modelNumber')?.value}
                     </span>
                     <span className="task-name-compact">
@@ -288,11 +306,6 @@ const DashboardMaison = ({
     };
 
     SortableTaskItem.propTypes = {
-        task: PropTypes.object.isRequired,
-        onTaskClick: PropTypes.func.isRequired,
-    };
-
-    TaskItem.propTypes = {
         task: PropTypes.object.isRequired,
         onTaskClick: PropTypes.func.isRequired,
     };

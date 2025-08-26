@@ -99,6 +99,7 @@ const App = () => {
             saveAppDataToLocalStorage(LOCAL_STORAGE_KEY, appData);
             showNotification('Données sauvegardées avec succès !', 'success');
         } catch (error) {
+            console.error('Erreur lors de la sauvegarde:', error);
             showNotification('Erreur lors de la sauvegarde.', 'error');
         }
     }, [appData, showNotification]);
