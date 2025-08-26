@@ -51,3 +51,234 @@ body {
     width: 90%;
     text-align: center;
 }
+
+/* Styles pour le panneau admin - gestion des catégories */
+.admin-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background-color: #f9fafb;
+}
+
+.admin-section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #374151;
+}
+
+.categories-management {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.category-management-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+}
+
+.category-name {
+    font-weight: 500;
+    color: #374151;
+}
+
+.category-task-count {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-left: 0.5rem;
+}
+
+.category-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-delete {
+    padding: 0.375rem 0.75rem;
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-delete:hover {
+    background-color: #b91c1c;
+}
+
+.no-categories-message {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 1rem;
+}
+
+.tabs-management {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.tab-management-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+}
+
+.tab-name {
+    font-weight: 500;
+    color: #374151;
+}
+
+.tab-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-rename {
+    padding: 0.375rem 0.75rem;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-rename:hover {
+    background-color: #2563eb;
+}
+
+/* Styles pour la gestion des tâches individuelles */
+.tasks-management {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.tab-tasks-section {
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background-color: white;
+}
+
+.tab-tasks-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #4b5563;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.task-management-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    transition: background-color 0.2s;
+}
+
+.task-management-item:hover {
+    background-color: #f3f4f6;
+}
+
+.task-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.task-name {
+    font-weight: 500;
+    color: #374151;
+}
+
+.task-category {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.task-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Styles pour les boutons d'action dans le menu gauche - SUPPRIMÉS */
+
+/* Styles pour le menu contextuel */
+.context-menu {
+    position: fixed;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    min-width: 150px;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.context-menu-item {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: #374151;
+    transition: background-color 0.2s ease;
+}
+
+.context-menu-item:hover {
+    background-color: #f3f4f6;
+}
+
+.context-menu-item.delete:hover {
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+
+.admin-task-item {
+    position: relative;
+}
+
+.admin-task-item::after {
+    content: '';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 4px;
+    background-color: #6b7280;
+    border-radius: 50%;
+    opacity: 0.5;
+}

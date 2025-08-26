@@ -22,12 +22,13 @@ const App = () => {
     const [notification, setNotification] = useState(null);
     const [categoryStates, setCategoryStates] = useState({});
     const [modalState, setModalState] = useState({ isOpen: false, message: '', onConfirm: () => { } });
+    const [viewMode, setViewMode] = useState('grid'); // Mode de vue par défaut
 
     // --- Effets ---
     // Sauvegarde les données dans localStorage à chaque modification
-    // useEffect(() => {
-    //     saveAppDataToLocalStorage(LOCAL_STORAGE_KEY, appData);
-    // }, [appData]);
+    useEffect(() => {
+        saveAppDataToLocalStorage(LOCAL_STORAGE_KEY, appData);
+    }, [appData]);
 
     // Gère la sélection de la tâche active lors du changement d'onglet
     useEffect(() => {
@@ -68,7 +69,7 @@ const App = () => {
         return tasks.reduce((acc, task) => {
             const category = task.category || 'Autres';
             if (!acc[category]) {
-                acc[category] = { tasks: [], isOpen: categoryStates[category]?.isOpen ?? true };
+                acc[category] = { tasks: [], isOpen: categoryStates[category]?.isOpen ?? false };
             }
             acc[category].tasks.push(task);
             return acc;
@@ -80,13 +81,48 @@ const App = () => {
     const handleTabChange = (tabName) => {
         setActiveTab(tabName);
         if (tabName !== 'Admin') {
-            setIsAdminMode(true); // Quitter le mode admin en changeant d'onglet
+            setIsAdminMode(false); // Quitter le mode admin en changeant d'onglet
+        }
+
+        // Fermer toutes les catégories quand on quitte l'onglet "Adjointes"
+        if (tabName !== 'Adjointes') {
+            setCategoryStates(prev => {
+                const newState = {};
+                Object.keys(prev).forEach(category => {
+                    newState[category] = { ...prev[category], isOpen: false };
+                });
+                return newState;
+            });
         }
     };
 
     const handleAdminPanel = () => {
         setActiveTab('Admin');
         setIsAdminMode(true);
+    };
+
+    // Fonction pour sélectionner une tâche depuis le dashboard et ouvrir sa catégorie
+    const handleTaskSelectFromDashboard = (task) => {
+        // Changer vers l'onglet de la tâche
+        if (task.tabName) {
+            setActiveTab(task.tabName);
+        }
+
+        // Sélectionner la tâche
+        setActiveTask(task);
+
+        // S'assurer que le mode admin est désactivé
+        setIsAdminMode(false);
+
+        // Ouvrir la catégorie correspondante dans le menu gauche avec un petit délai
+        if (task.category) {
+            setTimeout(() => {
+                setCategoryStates(prev => ({
+                    ...prev,
+                    [task.category]: { ...prev[task.category], isOpen: true }
+                }));
+            }, 100);
+        }
     };
 
     const handleExitAdmin = useCallback(() => {
@@ -161,6 +197,84 @@ const App = () => {
         });
     };
 
+    const handleDeleteCategory = (categoryToDelete) => {
+        setAppData(prev => {
+            const updatedData = { ...prev };
+            let tasksAffected = 0;
+
+            // Parcourir tous les onglets et modifier les tâches de cette catégorie
+            Object.keys(updatedData).forEach(tabName => {
+                if (tabName !== 'Maison' && tabName !== 'Admin') {
+                    const tasks = updatedData[tabName] || [];
+                    updatedData[tabName] = tasks.map(task => {
+                        if (task.category === categoryToDelete) {
+                            tasksAffected++;
+                            return { ...task, category: 'Autres' };
+                        }
+                        return task;
+                    });
+                }
+            });
+
+            showNotification(
+                `Catégorie "${categoryToDelete}" supprimée. ${tasksAffected} tâche${tasksAffected > 1 ? 's' : ''} déplacée${tasksAffected > 1 ? 's' : ''} vers "Autres".`,
+                'success'
+            );
+
+            return updatedData;
+        });
+    };
+
+    const handleRenameTask = (taskId, newName) => {
+        console.log('handleRenameTask called with:', taskId, newName);
+
+        if (!newName || !newName.trim()) {
+            showNotification('Le nom de la tâche ne peut pas être vide.', 'error');
+            return;
+        }
+
+        let taskFound = false;
+
+        setAppData(prev => {
+            const updatedData = { ...prev };
+            console.log('Current appData:', updatedData);
+
+            // Chercher la tâche dans tous les onglets
+            Object.keys(updatedData).forEach(tabName => {
+                if (tabName !== 'Maison' && tabName !== 'Admin') {
+                    const tasks = updatedData[tabName] || [];
+                    const taskIndex = tasks.findIndex(task => task.id === taskId);
+                    console.log(`Checking tab ${tabName}, taskIndex:`, taskIndex);
+                    if (taskIndex !== -1) {
+                        console.log('Task found! Updating name from', updatedData[tabName][taskIndex].name, 'to', newName.trim());
+                        updatedData[tabName][taskIndex] = {
+                            ...updatedData[tabName][taskIndex],
+                            name: newName.trim()
+                        };
+                        taskFound = true;
+                    }
+                }
+            });
+
+            // Sauvegarder immédiatement dans localStorage avec les nouvelles données
+            if (taskFound) {
+                saveAppDataToLocalStorage(LOCAL_STORAGE_KEY, updatedData);
+            }
+
+            return updatedData;
+        });
+
+        if (taskFound) {
+            // Mettre à jour la tâche active si c'est celle qui a été renommée
+            if (activeTask && activeTask.id === taskId) {
+                setActiveTask(prev => ({ ...prev, name: newName.trim() }));
+            }
+            showNotification(`Tâche renommée en "${newName.trim()}"`, 'success');
+        } else {
+            showNotification('Tâche non trouvée.', 'error');
+        }
+    };
+
     // --- Gestion des tâches ---
     const handleUpdateTask = (updatedTask) => {
         setAppData(prev => ({
@@ -169,6 +283,43 @@ const App = () => {
                 task.id === updatedTask.id ? updatedTask : task
             )
         }));
+    };
+
+    // Fonction pour mettre à jour un label de champ dans toutes les tâches
+    const handleUpdateFieldLabel = (fieldKey, newLabel) => {
+        setAppData(prev => {
+            const updatedData = { ...prev };
+
+            // Parcourir tous les onglets
+            Object.keys(updatedData).forEach(tabName => {
+                if (tabName !== 'Maison' && tabName !== 'Admin') {
+                    const tasks = updatedData[tabName] || [];
+                    updatedData[tabName] = tasks.map(task => ({
+                        ...task,
+                        fields: task.fields.map(field =>
+                            field.key === fieldKey ? { ...field, label: newLabel } : field
+                        )
+                    }));
+                }
+            });
+
+            // Sauvegarder immédiatement dans localStorage
+            saveAppDataToLocalStorage(LOCAL_STORAGE_KEY, updatedData);
+
+            return updatedData;
+        });
+
+        // Mettre à jour la tâche active si elle contient ce champ
+        if (activeTask && activeTask.fields) {
+            setActiveTask(prev => ({
+                ...prev,
+                fields: prev.fields.map(field =>
+                    field.key === fieldKey ? { ...field, label: newLabel } : field
+                )
+            }));
+        }
+
+        showNotification(`Label mis à jour dans toutes les tâches: "${newLabel}"`, 'success');
     };
 
     const handleAddTask = (targetTab, newTask) => {
@@ -302,10 +453,12 @@ const App = () => {
                     <DashboardMaison
                         appData={appData}
                         onTabChange={handleTabChange}
-                        onTaskSelect={setActiveTask}
+                        onTaskSelect={handleTaskSelectFromDashboard}
                         onAdminPanel={handleAdminPanel}
                         isAdminMode={isAdminMode}
                         onReorderTasksInCategory={handleReorderTasksInCategory}
+                        viewMode={viewMode}
+                        onViewModeChange={setViewMode}
                     />
                 )}
 
@@ -316,6 +469,8 @@ const App = () => {
                         onAddTask={handleAddTask}
                         onRenameTab={handleRenameTab}
                         onDeleteTab={handleDeleteTab}
+                        onDeleteCategory={handleDeleteCategory}
+                        onRenameTask={handleRenameTask}
                         onSaveData={handleSaveData}
                         showNotification={showNotification}
                     />
@@ -328,10 +483,14 @@ const App = () => {
                             onSelectTask={setActiveTask}
                             selectedTask={activeTask}
                             onToggleCategory={handleToggleCategory}
+                            isAdminMode={isAdminMode}
+                            onDeleteTask={handleDeleteTask}
+                            onRenameTask={handleRenameTask}
                         />
                         <DetailTacheAdjointe
                             task={activeTask}
                             onUpdateTask={handleUpdateTask}
+                            onUpdateFieldLabel={handleUpdateFieldLabel}
                             onAdminModeToggle={setIsAdminMode}
                             isAdminMode={isAdminMode}
                             onDeleteTask={handleDeleteTask}

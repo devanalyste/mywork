@@ -49,7 +49,7 @@ const ClipboardIcon = () => (
 );
 
 // Composant pour les champs de saisie réutilisables
-const InputField = ({ field, isAdminMode, onChange, onCopy }) => {
+const InputField = ({ field, isAdminMode, onChange, onCopy, onLabelChange }) => {
     if (!field) return null;
 
     const getInputClassName = () => {
@@ -65,7 +65,19 @@ const InputField = ({ field, isAdminMode, onChange, onCopy }) => {
 
     return (
         <div className="p-6 bg-white rounded-lg shadow-md">
-            <label className="block mb-2 text-sm font-bold text-gray-700">{field.label}:</label>
+            <div className="flex items-center space-x-2 mb-2">
+                {isAdminMode ? (
+                    <input
+                        type="text"
+                        value={field.label}
+                        onChange={(e) => onLabelChange(field.key, e.target.value)}
+                        className="text-sm font-bold text-gray-700 bg-yellow-100 border border-yellow-300 rounded px-2 py-1 flex-grow"
+                        placeholder="Nom du label"
+                    />
+                ) : (
+                    <label className="block text-sm font-bold text-gray-700">{field.label}:</label>
+                )}
+            </div>
             <div className="flex items-center space-x-2">
                 <input
                     type="text"
@@ -95,10 +107,11 @@ InputField.propTypes = {
     isAdminMode: PropTypes.bool.isRequired,
     onChange: PropTypes.func.isRequired,
     onCopy: PropTypes.func.isRequired,
+    onLabelChange: PropTypes.func.isRequired,
 };
 
 // Composant pour les zones de texte avec actions rapides
-const TextAreaField = ({ field, isAdminMode, onChange, onCopy, onInsertText, showNotification }) => {
+const TextAreaField = ({ field, isAdminMode, onChange, onCopy, onInsertText, showNotification, onLabelChange }) => {
     if (!field) return null;
 
     const textareaClassName = `w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 resize-y ${field.adminOnlyEdit && !isAdminMode ? CSS_CLASSES.input.readonly : CSS_CLASSES.input.editable}`;
@@ -110,7 +123,19 @@ const TextAreaField = ({ field, isAdminMode, onChange, onCopy, onInsertText, sho
 
     return (
         <div className="w-full mb-4">
-            <label className="block mb-2 text-sm font-bold text-gray-700">{field.label}:</label>
+            <div className="flex items-center space-x-2 mb-2">
+                {isAdminMode ? (
+                    <input
+                        type="text"
+                        value={field.label}
+                        onChange={(e) => onLabelChange(field.key, e.target.value)}
+                        className="text-sm font-bold text-gray-700 bg-yellow-100 border border-yellow-300 rounded px-2 py-1 flex-grow"
+                        placeholder="Nom du label"
+                    />
+                ) : (
+                    <label className="block text-sm font-bold text-gray-700">{field.label}:</label>
+                )}
+            </div>
             <textarea
                 name={field.key}
                 value={field.value}
@@ -133,7 +158,7 @@ const TextAreaField = ({ field, isAdminMode, onChange, onCopy, onInsertText, sho
                         <button
                             onClick={() => {
                                 const today = new Date().toLocaleDateString('fr-CA', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                                handleQuickAction(`${today}\n`, MESSAGES.quickAdd.date, true);
+                                handleQuickAction(`${today} `, MESSAGES.quickAdd.date, true);
                             }}
                             className={CSS_CLASSES.button.secondary}
                             title="Ajouter la date actuelle à la note"
@@ -168,9 +193,10 @@ TextAreaField.propTypes = {
     onCopy: PropTypes.func.isRequired,
     onInsertText: PropTypes.func.isRequired,
     showNotification: PropTypes.func.isRequired,
+    onLabelChange: PropTypes.func.isRequired,
 };
 
-const DetailTacheAdjointe = ({ task = null, onUpdateTask, onAdminModeToggle, isAdminMode, onDeleteTask, showNotification }) => {
+const DetailTacheAdjointe = ({ task = null, onUpdateTask, onUpdateFieldLabel, onAdminModeToggle, isAdminMode, onDeleteTask, showNotification }) => {
     const [editedTask, setEditedTask] = useState(task || { id: null, name: '', fields: [] });
     const [procedureCheckStates, setProcedureCheckStates] = useState({});
 
@@ -186,6 +212,22 @@ const DetailTacheAdjointe = ({ task = null, onUpdateTask, onAdminModeToggle, isA
                 field.key === key ? { ...field, value: value } : field
             ),
         }));
+    };
+
+    // Fonction pour mettre à jour les labels des champs dans toutes les tâches
+    const handleLabelChange = (key, label) => {
+        // Mettre à jour localement d'abord pour un feedback immédiat
+        setEditedTask((prev) => ({
+            ...prev,
+            fields: prev.fields.map((field) =>
+                field.key === key ? { ...field, label: label } : field
+            ),
+        }));
+
+        // Propager le changement à toutes les tâches via la fonction globale
+        if (onUpdateFieldLabel) {
+            onUpdateFieldLabel(key, label);
+        }
     };
 
     // Fonction optimisée pour la copie avec gestion d'erreur améliorée
@@ -286,12 +328,14 @@ const DetailTacheAdjointe = ({ task = null, onUpdateTask, onAdminModeToggle, isA
                     isAdminMode={isAdminMode}
                     onChange={handleFieldChange}
                     onCopy={handleCopy}
+                    onLabelChange={handleLabelChange}
                 />
                 <InputField
                     field={taskFields.fullTemplateName}
                     isAdminMode={isAdminMode}
                     onChange={handleFieldChange}
                     onCopy={handleCopy}
+                    onLabelChange={handleLabelChange}
                 />
             </div>
 
@@ -328,6 +372,7 @@ const DetailTacheAdjointe = ({ task = null, onUpdateTask, onAdminModeToggle, isA
                     onCopy={handleCopy}
                     onInsertText={insertTextIntoNote}
                     showNotification={showNotification}
+                    onLabelChange={handleLabelChange}
                 />
             </div>
 
@@ -403,6 +448,7 @@ const DetailTacheAdjointe = ({ task = null, onUpdateTask, onAdminModeToggle, isA
 DetailTacheAdjointe.propTypes = {
     task: PropTypes.object,
     onUpdateTask: PropTypes.func.isRequired,
+    onUpdateFieldLabel: PropTypes.func,
     onAdminModeToggle: PropTypes.func.isRequired,
     isAdminMode: PropTypes.bool.isRequired,
     onDeleteTask: PropTypes.func.isRequired,

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
-const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, onSaveData, showNotification }) => {
+const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, onDeleteCategory, onRenameTask, onSaveData, showNotification }) => {
     const [newTabName, setNewTabName] = useState('');
     const [newTaskData, setNewTaskData] = useState({
         targetTab: 'Adjointes',
@@ -15,6 +16,22 @@ const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, 
 
     // Obtenir les onglets principaux (exclure Maison et Admin)
     const mainTabs = Object.keys(appData).filter(tab => tab !== 'Maison' && tab !== 'Admin');
+
+    // Obtenir toutes les catégories uniques de toutes les tâches
+    const getAllCategories = () => {
+        const categories = new Set();
+        mainTabs.forEach(tabName => {
+            const tasks = appData[tabName] || [];
+            tasks.forEach(task => {
+                if (task.category) {
+                    categories.add(task.category);
+                }
+            });
+        });
+        return Array.from(categories).sort((a, b) => a.localeCompare(b));
+    };
+
+    const allCategories = getAllCategories();
 
     const handleAddTab = () => {
         if (newTabName.trim()) {
@@ -132,6 +149,86 @@ const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, 
                 </div>
             </div>
 
+            {/* Gérer les Catégories */}
+            <div className="admin-section">
+                <h2 className="admin-section-title">Gérer les Catégories</h2>
+                <div className="categories-management">
+                    {allCategories.length > 0 ? (
+                        allCategories.map(categoryName => {
+                            // Compter les tâches dans cette catégorie
+                            let taskCount = 0;
+                            mainTabs.forEach(tabName => {
+                                const tasks = appData[tabName] || [];
+                                taskCount += tasks.filter(task => task.category === categoryName).length;
+                            });
+
+                            return (
+                                <div key={categoryName} className="category-management-item">
+                                    <span className="category-name">{categoryName}</span>
+                                    <span className="category-task-count">({taskCount} tâche{taskCount > 1 ? 's' : ''})</span>
+                                    <div className="category-actions">
+                                        <button
+                                            className="btn-delete"
+                                            onClick={() => {
+                                                if (window.confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${categoryName}" ? Toutes les tâches de cette catégorie seront déplacées vers "Autres".`)) {
+                                                    onDeleteCategory(categoryName);
+                                                }
+                                            }}
+                                            title={`Supprimer la catégorie "${categoryName}"`}
+                                        >
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <p className="no-categories-message">Aucune catégorie trouvée.</p>
+                    )}
+                </div>
+            </div>
+
+            {/* Gérer les Tâches Individuelles */}
+            <div className="admin-section">
+                <h2 className="admin-section-title">Gérer les Tâches Individuelles</h2>
+                <div className="tasks-management">
+                    {mainTabs.map(tabName => {
+                        const tasks = appData[tabName] || [];
+                        if (tasks.length === 0) return null;
+
+                        return (
+                            <div key={tabName} className="tab-tasks-section">
+                                <h3 className="tab-tasks-title">Onglet: {tabName}</h3>
+                                <div className="tasks-list">
+                                    {tasks.map(task => (
+                                        <div key={task.id} className="task-management-item">
+                                            <div className="task-info">
+                                                <span className="task-name">{task.name}</span>
+                                                <span className="task-category">({task.category || 'Autres'})</span>
+                                            </div>
+                                            <div className="task-actions">
+                                                <button
+                                                    className="btn-rename"
+                                                    onClick={() => {
+                                                        const newName = prompt(`Nouveau nom pour la tâche "${task.name}":`, task.name);
+                                                        if (newName && newName !== task.name) {
+                                                            onRenameTask(task.id, newName);
+                                                        }
+                                                    }}
+                                                    title={`Renommer "${task.name}"`}
+                                                >
+                                                    ✏️ Renommer
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
             {/* Ajouter un Nouvel Onglet */}
             <div className="admin-section">
                 <h3 className="admin-subsection-title">Ajouter un Nouvel Onglet</h3>
@@ -155,8 +252,9 @@ const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, 
                 <h3 className="admin-subsection-title">Ajouter une Nouvelle Tâche</h3>
                 <div className="add-task-form">
                     <div className="form-group">
-                        <label>Ajouter la tâche à l'onglet:</label>
+                        <label htmlFor="targetTab">Ajouter la tâche à l'onglet:</label>
                         <select
+                            id="targetTab"
                             value={newTaskData.targetTab}
                             onChange={(e) => setNewTaskData({ ...newTaskData, targetTab: e.target.value })}
                             className="form-select"
@@ -168,8 +266,9 @@ const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, 
                     </div>
 
                     <div className="form-group">
-                        <label>Catégorie de la Tâche (pour Dashboard):</label>
+                        <label htmlFor="taskCategory">Catégorie de la Tâche (pour Dashboard):</label>
                         <input
+                            id="taskCategory"
                             type="text"
                             placeholder="ex: Annulations, Rappels, Tâches"
                             value={newTaskData.category}
@@ -179,8 +278,9 @@ const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, 
                     </div>
 
                     <div className="form-group">
-                        <label>Nom de la Tâche:</label>
+                        <label htmlFor="taskName">Nom de la Tâche:</label>
                         <input
+                            id="taskName"
                             type="text"
                             value={newTaskData.name}
                             onChange={(e) => setNewTaskData({ ...newTaskData, name: e.target.value })}
@@ -189,8 +289,9 @@ const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, 
                     </div>
 
                     <div className="form-group">
-                        <label>Fonction de Modèle/Lettres:</label>
+                        <label htmlFor="modelNumber">Fonction de Modèle/Lettres:</label>
                         <input
+                            id="modelNumber"
                             type="text"
                             value={newTaskData.modelNumber}
                             onChange={(e) => setNewTaskData({ ...newTaskData, modelNumber: e.target.value })}
@@ -199,8 +300,9 @@ const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, 
                     </div>
 
                     <div className="form-group">
-                        <label>Nom de Pièce Jointe:</label>
+                        <label htmlFor="attachmentName">Nom de Pièce Jointe:</label>
                         <input
+                            id="attachmentName"
                             type="text"
                             value={newTaskData.attachmentName}
                             onChange={(e) => setNewTaskData({ ...newTaskData, attachmentName: e.target.value })}
@@ -209,8 +311,9 @@ const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, 
                     </div>
 
                     <div className="form-group">
-                        <label>Note EPIC:</label>
+                        <label htmlFor="noteTemplate">Note EPIC:</label>
                         <textarea
+                            id="noteTemplate"
                             value={newTaskData.noteTemplate}
                             onChange={(e) => setNewTaskData({ ...newTaskData, noteTemplate: e.target.value })}
                             className="form-textarea"
@@ -219,8 +322,9 @@ const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, 
                     </div>
 
                     <div className="form-group">
-                        <label>Procédure à Suivre:</label>
+                        <label htmlFor="procedure">Procédure à Suivre:</label>
                         <textarea
+                            id="procedure"
                             value={newTaskData.procedure}
                             onChange={(e) => setNewTaskData({ ...newTaskData, procedure: e.target.value })}
                             className="form-textarea"
@@ -235,7 +339,7 @@ const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, 
                                 checked={newTaskData.adminOnlyEdit}
                                 onChange={(e) => setNewTaskData({ ...newTaskData, adminOnlyEdit: e.target.checked })}
                             />
-                            Activé avec coches pour procédure
+                            {' '}Activé avec coches pour procédure
                         </label>
                     </div>
 
@@ -245,7 +349,19 @@ const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, 
                 </div>
             </div>
         </div>
-    );
+    )
+};
+
+PanneauAdmin.propTypes = {
+    appData: PropTypes.object.isRequired,
+    onAddTab: PropTypes.func.isRequired,
+    onAddTask: PropTypes.func.isRequired,
+    onRenameTab: PropTypes.func.isRequired,
+    onDeleteTab: PropTypes.func.isRequired,
+    onDeleteCategory: PropTypes.func.isRequired,
+    onRenameTask: PropTypes.func.isRequired,
+    onSaveData: PropTypes.func.isRequired,
+    showNotification: PropTypes.func.isRequired
 };
 
 export default PanneauAdmin;
