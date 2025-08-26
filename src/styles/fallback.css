@@ -1076,6 +1076,7 @@ button:hover {
     color: #9ca3af;
     font-size: 0.875rem;
     margin-right: 0.5rem;
+    -webkit-user-select: none;
     user-select: none;
     padding: 0.25rem;
     border-radius: 0.25rem;
