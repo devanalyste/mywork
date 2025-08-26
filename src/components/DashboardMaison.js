@@ -342,6 +342,9 @@ const DashboardMaison = ({
 
     // Composant pour l'affichage Kanban
     const KanbanView = ({ categoriesData, searchTerm, onTaskClick, onReorderTasksInCategory }) => {
+        const [sortField, setSortField] = useState('none');
+        const [sortDirection, setSortDirection] = useState('asc');
+        
         const sensors = useSensors(
             useSensor(PointerSensor),
             useSensor(KeyboardSensor, {
@@ -349,23 +352,83 @@ const DashboardMaison = ({
             })
         );
 
-        // Filtrer les tâches par catégorie selon la recherche
-        const filteredCategoriesData = useMemo(() => {
-            if (!searchTerm) return categoriesData;
+        // Fonction pour gérer le tri
+        const handleSort = (field) => {
+            if (sortField === field) {
+                setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+            } else {
+                setSortField(field);
+                setSortDirection('asc');
+            }
+        };
 
-            const searchLower = searchTerm.toLowerCase();
-            return categoriesData.map(category => ({
-                ...category,
-                tasks: category.tasks.filter(task => {
-                    const modelNumber = task.fields?.find(f => f.key === 'modelNumber')?.value || '';
-                    return (
-                        task.name.toLowerCase().includes(searchLower) ||
-                        modelNumber.toLowerCase().includes(searchLower) ||
-                        category.name.toLowerCase().includes(searchLower)
-                    );
-                })
-            })).filter(category => category.tasks.length > 0);
-        }, [categoriesData, searchTerm]);
+        // Icône de tri
+        const getSortIcon = (field) => {
+            if (sortField !== field) {
+                return <span className="text-gray-400">⇕</span>;
+            }
+            return sortDirection === 'asc' ?
+                <span className="font-bold text-blue-600">▲</span> :
+                <span className="font-bold text-blue-600">▼</span>;
+        };
+
+        // Filtrer et trier les tâches par catégorie selon la recherche et le tri
+        const filteredCategoriesData = useMemo(() => {
+            let result = categoriesData;
+            
+            // Filtrage par recherche
+            if (searchTerm) {
+                const searchLower = searchTerm.toLowerCase();
+                result = categoriesData.map(category => ({
+                    ...category,
+                    tasks: category.tasks.filter(task => {
+                        const modelNumber = task.fields?.find(f => f.key === 'modelNumber')?.value || '';
+                        return (
+                            task.name.toLowerCase().includes(searchLower) ||
+                            modelNumber.toLowerCase().includes(searchLower) ||
+                            category.name.toLowerCase().includes(searchLower)
+                        );
+                    })
+                })).filter(category => category.tasks.length > 0);
+            }
+
+            // Tri des tâches dans chaque catégorie
+            if (sortField !== 'none') {
+                result = result.map(category => ({
+                    ...category,
+                    tasks: [...category.tasks].sort((a, b) => {
+                        let aValue, bValue;
+
+                        switch (sortField) {
+                            case 'modelNumber':
+                                aValue = a.fields?.find(f => f.key === 'modelNumber')?.value || '';
+                                bValue = b.fields?.find(f => f.key === 'modelNumber')?.value || '';
+                                // Tri numérique si possible, sinon alphabétique
+                                const aNum = parseInt(aValue);
+                                const bNum = parseInt(bValue);
+                                if (!isNaN(aNum) && !isNaN(bNum)) {
+                                    return sortDirection === 'asc' ? aNum - bNum : bNum - aNum;
+                                }
+                                break;
+                            case 'name':
+                                aValue = a.name.toLowerCase();
+                                bValue = b.name.toLowerCase();
+                                break;
+                            default:
+                                return 0;
+                        }
+
+                        if (sortDirection === 'asc') {
+                            return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+                        } else {
+                            return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+                        }
+                    })
+                }));
+            }
+
+            return result;
+        }, [categoriesData, searchTerm, sortField, sortDirection]);
 
         const handleDragEnd = (event) => {
             const { active, over } = event;
@@ -403,6 +466,45 @@ const DashboardMaison = ({
 
         return (
             <div className="w-full h-full kanban-view">
+                {/* Barre de tri pour Kanban */}
+                <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div className="flex items-center gap-4">
+                        <span className="text-sm font-medium text-gray-700">Trier par:</span>
+                        <button
+                            className={`px-3 py-1 text-xs rounded transition-colors ${
+                                sortField === 'none' 
+                                    ? 'bg-blue-500 text-white' 
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            }`}
+                            onClick={() => setSortField('none')}
+                        >
+                            Aucun
+                        </button>
+                        <button
+                            className={`flex items-center gap-1 px-3 py-1 text-xs rounded transition-colors ${
+                                sortField === 'modelNumber' 
+                                    ? 'bg-blue-500 text-white' 
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            }`}
+                            onClick={() => handleSort('modelNumber')}
+                        >
+                            <span>Numéro</span>
+                            {sortField === 'modelNumber' && getSortIcon('modelNumber')}
+                        </button>
+                        <button
+                            className={`flex items-center gap-1 px-3 py-1 text-xs rounded transition-colors ${
+                                sortField === 'name' 
+                                    ? 'bg-blue-500 text-white' 
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            }`}
+                            onClick={() => handleSort('name')}
+                        >
+                            <span>Nom</span>
+                            {sortField === 'name' && getSortIcon('name')}
+                        </button>
+                    </div>
+                </div>
+                
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
