@@ -10,7 +10,7 @@
   "version": "1.0.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/devanalyste/covalen-app.git"
+    "url": "https://github.com/devanalyste/mywork.git"
   },
   "private": true,
   "main": "electron.js",
@@ -63,7 +63,7 @@
     "publish": {
       "provider": "github",
       "owner": "devanalyste",
-      "repo": "covalen-app"
+      "repo": "mywork"
     },
     "win": {
       "target": [
