@@ -36,3 +36,28 @@ export const saveAppDataToLocalStorage = (key, data) => {
         return false;
     }
 };
+
+// Fonction pour vider complètement les données localStorage et repartir avec initialData
+export const clearAppDataFromLocalStorage = (key) => {
+    try {
+        if (typeof (Storage) === "undefined") {
+            console.warn("localStorage n'est pas disponible");
+            return false;
+        }
+
+        localStorage.removeItem(key);
+        console.log("🗑️ Données supprimées du localStorage:", key);
+        return true;
+    } catch (error) {
+        console.error("❌ Erreur lors de la suppression des données du localStorage", error);
+        return false;
+    }
+};
+
+// Fonction pour forcer le reset complet des données
+export const resetToInitialData = (key, initialData) => {
+    clearAppDataFromLocalStorage(key);
+    saveAppDataToLocalStorage(key, initialData);
+    console.log("🔄 Reset complet vers initialData effectué");
+    return initialData;
+};

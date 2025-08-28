@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const MenuHaut = ({ tabs, activeTab, onTabClick, onLogout, onAdminPanel, isAdminMode, onExitAdmin }) => {
+const MenuHaut = ({ tabs, activeTab, onTabClick, onLogout, onAdminPanel, isAdminMode, onExitAdmin, onResetData }) => {
     return (
         <div className="navbar">
             <div style={{ display: 'flex' }}>
@@ -18,9 +18,18 @@ const MenuHaut = ({ tabs, activeTab, onTabClick, onLogout, onAdminPanel, isAdmin
             </div>
             <div>
                 {isAdminMode ? (
-                    <button onClick={onExitAdmin} style={{ backgroundColor: '#059669' }}>
-                        Quitter Mode Admin
-                    </button>
+                    <>
+                        <button 
+                            onClick={onResetData} 
+                            style={{ backgroundColor: '#f59e0b', marginRight: '0.5rem' }}
+                            title="Vider les données sauvegardées et revenir aux données de base"
+                        >
+                            Réinitialisation des données de base
+                        </button>
+                        <button onClick={onExitAdmin} style={{ backgroundColor: '#059669' }}>
+                            Quitter Mode Admin
+                        </button>
+                    </>
                 ) : (
                     <button onClick={onAdminPanel}>Admin</button>
                 )}
@@ -37,6 +46,7 @@ MenuHaut.propTypes = {
     onAdminPanel: PropTypes.func.isRequired,
     isAdminMode: PropTypes.bool,
     onExitAdmin: PropTypes.func,
+    onResetData: PropTypes.func,
 };
 
 export default MenuHaut;

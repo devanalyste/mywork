@@ -10,7 +10,7 @@ import ThemeToggle from './components/ThemeToggle';
 import VersionHistory from './components/VersionHistory';
 import QuickActions from './components/QuickActions';
 import RightSidePanel from './components/RightSidePanel';
-import { loadAppDataFromLocalStorage, saveAppDataToLocalStorage } from './utils/localStorage';
+import { loadAppDataFromLocalStorage, saveAppDataToLocalStorage, resetToInitialData } from './utils/localStorage';
 import { initialAppData } from './data/initialData'; // Vraies données de production
 import { versionManager } from './utils/versionManager';
 import { themeManager } from './utils/themeManager';
@@ -73,7 +73,7 @@ const App = () => {
     const LOCAL_STORAGE_KEY = 'covalenAppData';
 
     // --- États de l'application ---
-    const [appData, setAppData] = useState(() => loadAppDataFromLocalStorage(LOCAL_STORAGE_KEY, initialAppData)); // Utilisation des vraies données de production
+    const [appData, setAppData] = useState(() => loadAppDataFromLocalStorage(LOCAL_STORAGE_KEY, initialAppData));
     const [activeTab, setActiveTab] = useState('Maison');
     const [activeTask, setActiveTask] = useState(null);
     const [isAdminMode, setIsAdminMode] = useState(false);
@@ -249,6 +249,19 @@ const App = () => {
         }, {});
     }, [appData, activeTab, categoryStates]);
 
+    // Fonction pour réinitialiser les données aux valeurs initiales
+    const handleResetData = () => {
+        const confirmation = window.confirm(
+            '⚠️ Attention ! Cette action va supprimer toutes vos données sauvegardées et rétablir les données de base.\n\n' +
+            'Êtes-vous sûr(e) de vouloir continuer ?'
+        );
+        
+        if (confirmation) {
+            const resetData = resetToInitialData(LOCAL_STORAGE_KEY, initialAppData);
+            setAppData(resetData);
+            showNotification('✅ Données réinitialisées aux valeurs de base', 'success');
+        }
+    };
 
     // --- Gestion des onglets ---
     const handleTabChange = (tabName) => {
@@ -662,6 +675,7 @@ const App = () => {
                 onAdminPanel={handleAdminPanel}
                 onExitAdmin={handleExitAdmin}
                 isAdminMode={isAdminMode}
+                onResetData={handleResetData}
                 onLogout={() => showNotification('Fonction de déconnexion à implémenter.', 'info')}
                 isDarkMode={isDarkMode}
             />
