@@ -6,16 +6,74 @@ import PanneauAdmin from './components/PanneauAdmin';
 import DashboardMaison from './components/DashboardMaison';
 import Notification from './components/Notification';
 import ConfirmationModale from './components/ConfirmationModale';
+import ThemeToggle from './components/ThemeToggle';
+import VersionHistory from './components/VersionHistory';
+import QuickActions from './components/QuickActions';
+import RightSidePanel from './components/RightSidePanel';
 import { loadAppDataFromLocalStorage, saveAppDataToLocalStorage } from './utils/localStorage';
-import { massiveTestAppData } from './data/massiveTestData'; // Données de test MASSIVES pour stress-test du layout
+import { initialAppData } from './data/initialData'; // Vraies données de production
+import { versionManager } from './utils/versionManager';
+import { themeManager } from './utils/themeManager';
+import { templateManager } from './utils/templateManager';
 
+// Gestionnaire d'erreur global pour supprimer les warnings ResizeObserver bénins
+const suppressResizeObserverErrors = () => {
+    // Supprimer les erreurs ResizeObserver dans les événements error
+    window.addEventListener('error', e => {
+        if (e.message && (
+            e.message.includes('ResizeObserver loop completed') ||
+            e.message.includes('ResizeObserver loop limit') ||
+            e.message.includes('ResizeObserver')
+        )) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+            return false;
+        }
+    }, true);
+
+    // Supprimer les erreurs ResizeObserver dans les promesses rejetées
+    window.addEventListener('unhandledrejection', e => {
+        if (e.reason && e.reason.message && e.reason.message.includes('ResizeObserver')) {
+            e.preventDefault();
+            return false;
+        }
+    }, true);
+
+    // Surcharger console.error pour filtrer les erreurs ResizeObserver
+    const originalConsoleError = console.error;
+    console.error = (...args) => {
+        const message = args[0];
+        if (typeof message === 'string' && (
+            message.includes('ResizeObserver') ||
+            message.includes('Warning: ResizeObserver')
+        )) {
+            return; // Ne pas afficher l'erreur
+        }
+        originalConsoleError.apply(console, args);
+    };
+
+    // Intercepter les erreurs au niveau du gestionnaire d'erreur React
+    const originalErrorHandler = window.onerror;
+    window.onerror = (message, source, lineno, colno, error) => {
+        if (typeof message === 'string' && message.includes('ResizeObserver')) {
+            return true; // Marquer comme gérée
+        }
+        if (originalErrorHandler) {
+            return originalErrorHandler.call(window, message, source, lineno, colno, error);
+        }
+        return false;
+    };
+};
+
+// Initialiser la suppression des erreurs
+suppressResizeObserverErrors();
 
 // Composant principal de l'application
 const App = () => {
     const LOCAL_STORAGE_KEY = 'covalenAppData';
 
     // --- États de l'application ---
-    const [appData, setAppData] = useState(() => loadAppDataFromLocalStorage(LOCAL_STORAGE_KEY, massiveTestAppData)); // Utilisation des données massives pour le test
+    const [appData, setAppData] = useState(() => loadAppDataFromLocalStorage(LOCAL_STORAGE_KEY, initialAppData)); // Utilisation des vraies données de production
     const [activeTab, setActiveTab] = useState('Maison');
     const [activeTask, setActiveTask] = useState(null);
     const [isAdminMode, setIsAdminMode] = useState(false);
@@ -24,7 +82,31 @@ const App = () => {
     const [modalState, setModalState] = useState({ isOpen: false, message: '', onConfirm: () => { } });
     const [viewMode, setViewMode] = useState('grid'); // Mode de vue par défaut
 
+    // --- Nouveaux états pour les fonctionnalités avancées ---
+    const [isDarkMode, setIsDarkMode] = useState(() => themeManager.getCurrentTheme() === 'dark');
+    const [showVersionHistory, setShowVersionHistory] = useState(false);
+    const [showQuickActions, setShowQuickActions] = useState(false);
+    const [availableTemplates, setAvailableTemplates] = useState([]);
+
     // --- Effets ---
+    // Gestion des erreurs ResizeObserver au niveau du composant
+    useEffect(() => {
+        const handleError = (event) => {
+            if (event.error && event.error.message &&
+                event.error.message.includes('ResizeObserver')) {
+                event.preventDefault();
+                event.stopPropagation();
+                return false;
+            }
+        };
+
+        window.addEventListener('error', handleError, true);
+
+        return () => {
+            window.removeEventListener('error', handleError, true);
+        };
+    }, []);
+
     // Sauvegarde les données dans localStorage à chaque modification
     useEffect(() => {
         saveAppDataToLocalStorage(LOCAL_STORAGE_KEY, appData);
@@ -48,11 +130,102 @@ const App = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab, appData]);
 
+    // --- Nouveaux effets pour les fonctionnalités avancées ---
+    // Initialisation du gestionnaire de versions
+    useEffect(() => {
+        versionManager.initialize(appData);
+    }, [appData]);
+
+    // Gestion du thème
+    useEffect(() => {
+        const unsubscribe = themeManager.subscribe((theme) => {
+            setIsDarkMode(theme === 'dark');
+        });
+        return unsubscribe;
+    }, []);
+
+    // Chargement des modèles disponibles
+    useEffect(() => {
+        const templates = templateManager.getAvailableTemplates();
+        setAvailableTemplates(templates);
+    }, []);
+
+    // Sauvegarde automatique de version lors des modifications importantes
+    useEffect(() => {
+        const saveVersion = () => {
+            versionManager.createSnapshot(appData, 'Sauvegarde automatique');
+        };
+
+        const timer = setTimeout(saveVersion, 30000); // Sauvegarde toutes les 30 secondes
+        return () => clearTimeout(timer);
+    }, [appData]);
+
     // --- Fonctions utilitaires ---
     const showNotification = useCallback((message, type = 'info') => {
         setNotification({ message, type });
         setTimeout(() => setNotification(null), 3000);
     }, []);
+
+    // --- Nouvelles fonctions pour les fonctionnalités avancées ---
+    const handleThemeToggle = useCallback(() => {
+        const newTheme = themeManager.toggleTheme();
+        showNotification(`Thème ${newTheme === 'dark' ? 'sombre' : 'clair'} activé`, 'info');
+    }, [showNotification]);
+
+    const handleVersionRestore = useCallback((versionId) => {
+        console.log(`🔄 App.js: Tentative de restauration de la version ${versionId} (type: ${typeof versionId})`);
+        try {
+            const restoredData = versionManager.restoreVersion(versionId);
+            if (restoredData) {
+                console.log('✅ App.js: Données restaurées avec succès', restoredData);
+                setAppData(restoredData);
+                showNotification('Version restaurée avec succès', 'success');
+                setShowVersionHistory(false);
+            } else {
+                console.error('❌ App.js: Aucune donnée retournée par restoreVersion');
+                showNotification('Erreur lors de la restauration', 'error');
+            }
+        } catch (error) {
+            console.error('❌ App.js: Exception lors de la restauration:', error);
+            showNotification('Erreur lors de la restauration: ' + error.message, 'error');
+        }
+    }, [showNotification]);
+
+    const handleQuickAction = useCallback((action, data) => {
+        switch (action) {
+            case 'create_from_template':
+                const newTask = templateManager.createFromTemplate(data.templateId, data.customData);
+                if (newTask && activeTab !== 'Maison' && activeTab !== 'Admin') {
+                    const currentTasks = appData[activeTab] || [];
+                    const updatedTasks = [...currentTasks, newTask];
+                    const newAppData = { ...appData, [activeTab]: updatedTasks };
+                    setAppData(newAppData);
+                    versionManager.createSnapshot(newAppData, 'Création depuis modèle');
+                    showNotification('Tâche créée depuis le modèle', 'success');
+                }
+                break;
+            case 'export_data':
+                const exportType = data?.type || 'all';
+                showNotification(`Export ${exportType} en cours...`, 'info');
+                // TODO: Implémenter la logique d'export
+                break;
+            case 'import_data':
+                showNotification('Fonctionnalité d\'import en développement', 'info');
+                // TODO: Implémenter la logique d'import
+                break;
+            case 'show_templates':
+                showNotification('Gestionnaire de templates en développement', 'info');
+                // TODO: Ouvrir le gestionnaire de templates
+                break;
+            case 'show_statistics':
+                showNotification('Statistiques en développement', 'info');
+                // TODO: Ouvrir les statistiques
+                break;
+            default:
+                break;
+        }
+        setShowQuickActions(false);
+    }, [appData, activeTab, showNotification]);
 
     // --- Gestion des catégories (menu de gauche) ---
     const handleToggleCategory = useCallback((category) => {
@@ -362,23 +535,27 @@ const App = () => {
         }
     };
 
-    const handleReorderTasksInCategory = (category, sourceIndex, targetIndex) => {
-        // Fonction pour réorganiser l'ordre des tâches dans une catégorie
-        const reorderTasksInTab = (tasks, targetCategory, sIndex, tIndex) => {
-            const categoryTasks = tasks.filter(t => (t.category || 'Autres') === targetCategory);
+    const handleReorderTasksInCategory = (category, newTasksOrder) => {
+        console.log('🔄 App.js handleReorderTasksInCategory called with:', { category, newTasksOrder });
 
-            if (categoryTasks.length <= 1 || sIndex === tIndex) {
-                return tasks; // Pas de changement nécessaire
-            }
+        // Si newTasksOrder est un nombre (ancien système), on ignore
+        if (typeof newTasksOrder === 'number') {
+            console.log('⚠️ Old index-based system detected, ignoring');
+            return;
+        }
 
-            // Réorganiser les tâches de cette catégorie
-            const reorderedTasks = [...categoryTasks];
-            const [removed] = reorderedTasks.splice(sIndex, 1);
-            reorderedTasks.splice(tIndex, 0, removed);
+        // Fonction pour mettre à jour les tâches avec le nouvel ordre
+        const updateTasksWithNewOrder = (tasks, targetCategory, newOrder) => {
+            console.log('📝 Updating tasks for category:', targetCategory);
 
-            // Remettre les tâches réorganisées dans l'onglet
+            // Séparer les tâches de cette catégorie et les autres
             const otherTasks = tasks.filter(t => (t.category || 'Autres') !== targetCategory);
-            return [...otherTasks, ...reorderedTasks];
+
+            // Utiliser directement le nouvel ordre fourni
+            const updatedTasks = [...otherTasks, ...newOrder];
+
+            console.log('✅ Tasks updated:', updatedTasks);
+            return updatedTasks;
         };
 
         setAppData(prev => {
@@ -387,19 +564,20 @@ const App = () => {
             // Appliquer la réorganisation à tous les onglets concernés
             Object.keys(updatedData).forEach(tabName => {
                 if (tabName !== 'Maison' && tabName !== 'Admin') {
-                    updatedData[tabName] = reorderTasksInTab(
+                    updatedData[tabName] = updateTasksWithNewOrder(
                         updatedData[tabName] || [],
                         category,
-                        sourceIndex,
-                        targetIndex
+                        newTasksOrder
                     );
                 }
             });
 
+            console.log('🎉 App data updated successfully');
             return updatedData;
         });
 
         showNotification(`Tâches réorganisées dans la catégorie "${category}"`, 'success');
+        console.log('✅ Reorder completed and notification shown');
     };
 
     // --- Raccourcis clavier ---
@@ -410,34 +588,73 @@ const App = () => {
                 e.preventDefault();
                 if (isAdminMode) {
                     handleSaveData();
+                } else {
+                    // Sauvegarde de version manuelle
+                    versionManager.createSnapshot(appData, 'Sauvegarde manuelle');
+                    showNotification('Version sauvegardée', 'success');
                 }
             }
 
-            // Ctrl+/ pour focus sur la recherche (dashboard)
-            if (e.ctrlKey && e.key === '/') {
+            // Ctrl+T pour changer de thème
+            if (e.ctrlKey && e.key === 't') {
                 e.preventDefault();
-                if (activeTab === 'Maison') {
-                    const searchInput = document.querySelector('.search-input');
-                    if (searchInput) {
-                        searchInput.focus();
-                        showNotification('Focus sur la recherche', 'info');
-                    }
-                }
+                handleThemeToggle();
             }
 
-            // Échap pour sortir du mode admin
-            if (e.key === 'Escape' && isAdminMode) {
-                handleExitAdmin();
-                showNotification('Mode admin quitté', 'info');
+            // Ctrl+Q pour ouvrir les actions rapides
+            if (e.ctrlKey && e.key === 'q') {
+                e.preventDefault();
+                setShowQuickActions(prev => !prev);
+            }
+
+            // Ctrl+H pour ouvrir l'historique des versions
+            if (e.ctrlKey && e.key === 'h') {
+                e.preventDefault();
+                setShowVersionHistory(prev => !prev);
+            }
+
+            // Échap pour fermer les modales et quitter les modes
+            if (e.key === 'Escape') {
+                // Fermer les modales et panneaux
+                setModalState({ isOpen: false, message: '', onConfirm: () => { } });
+                setShowVersionHistory(false);
+                setShowQuickActions(false);
+
+                // Quitter le mode admin
+                if (isAdminMode) {
+                    handleExitAdmin();
+                    showNotification('Mode admin quitté', 'info');
+                }
             }
         };
 
         document.addEventListener('keydown', handleKeyPress);
         return () => document.removeEventListener('keydown', handleKeyPress);
-    }, [isAdminMode, activeTab, handleSaveData, handleExitAdmin, showNotification]);
+    }, [isAdminMode, activeTab, handleSaveData, handleExitAdmin, showNotification, appData, handleThemeToggle]);
 
     return (
-        <div className="flex flex-col min-h-screen font-sans antialiased bg-gray-100">
+        <div className={`flex flex-col min-h-screen font-sans antialiased transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'
+            }`}>
+            {/* Bouton de toggle du thème */}
+            <ThemeToggle
+                isDarkMode={isDarkMode}
+                onToggle={handleThemeToggle}
+            />
+
+            {/* Raccourci Quick Actions */}
+            <div className="fixed z-50 top-4 right-4">
+                <button
+                    onClick={() => setShowQuickActions(true)}
+                    className={`p-2 rounded-full transition-colors ${isDarkMode
+                        ? 'bg-gray-800 hover:bg-gray-700 text-white'
+                        : 'bg-white hover:bg-gray-50 text-gray-900'
+                        } shadow-lg`}
+                    title="Actions rapides (Ctrl+Q)"
+                >
+                    ⚡
+                </button>
+            </div>
+
             <MenuHaut
                 tabs={Object.keys(appData)}
                 activeTab={activeTab}
@@ -446,6 +663,7 @@ const App = () => {
                 onExitAdmin={handleExitAdmin}
                 isAdminMode={isAdminMode}
                 onLogout={() => showNotification('Fonction de déconnexion à implémenter.', 'info')}
+                isDarkMode={isDarkMode}
             />
 
             <main className="flex flex-1 w-full p-6 mx-auto overflow-hidden max-w-screen-2xl">
@@ -459,6 +677,7 @@ const App = () => {
                         onReorderTasksInCategory={handleReorderTasksInCategory}
                         viewMode={viewMode}
                         onViewModeChange={setViewMode}
+                        isDarkMode={isDarkMode}
                     />
                 )}
 
@@ -473,6 +692,7 @@ const App = () => {
                         onRenameTask={handleRenameTask}
                         onSaveData={handleSaveData}
                         showNotification={showNotification}
+                        isDarkMode={isDarkMode}
                     />
                 )}
 
@@ -486,6 +706,7 @@ const App = () => {
                             isAdminMode={isAdminMode}
                             onDeleteTask={handleDeleteTask}
                             onRenameTask={handleRenameTask}
+                            isDarkMode={isDarkMode}
                         />
                         <DetailTacheAdjointe
                             task={activeTask}
@@ -495,6 +716,9 @@ const App = () => {
                             isAdminMode={isAdminMode}
                             onDeleteTask={handleDeleteTask}
                             showNotification={showNotification}
+                            isDarkMode={isDarkMode}
+                            availableTemplates={availableTemplates}
+                            onCreateFromTemplate={(templateId) => handleQuickAction('create_from_template', { templateId })}
                         />
                     </>
                 )}
@@ -504,6 +728,7 @@ const App = () => {
                 message={notification?.message}
                 type={notification?.type}
                 onClose={() => setNotification(null)}
+                isDarkMode={isDarkMode}
             />
 
             <ConfirmationModale
@@ -511,7 +736,51 @@ const App = () => {
                 message={modalState.message}
                 onConfirm={modalState.onConfirm}
                 onCancel={() => setModalState({ isOpen: false })}
+                isDarkMode={isDarkMode}
             />
+
+            {/* Fenêtre de l'historique des versions */}
+            {showVersionHistory && (
+                <VersionHistory
+                    isOpen={showVersionHistory}
+                    onClose={() => setShowVersionHistory(false)}
+                    onRestore={handleVersionRestore}
+                    isDarkMode={isDarkMode}
+                />
+            )}
+
+            {/* Panneau latéral droit avec les actions */}
+            <RightSidePanel
+                onAction={handleQuickAction}
+                isDarkMode={isDarkMode}
+            />
+
+            {/* Panneau des actions rapides */}
+            {showQuickActions && (
+                <QuickActions
+                    isOpen={showQuickActions}
+                    onClose={() => setShowQuickActions(false)}
+                    onAction={handleQuickAction}
+                    templates={availableTemplates}
+                    isDarkMode={isDarkMode}
+                />
+            )}
+
+            {/* Bouton d'accès à l'historique des versions */}
+            <div className="fixed z-40 bottom-4 right-4">
+                <button
+                    onClick={() => setShowVersionHistory(true)}
+                    className={`p-3 rounded-full transition-colors ${isDarkMode
+                        ? 'bg-gray-800 hover:bg-gray-700 text-white'
+                        : 'bg-white hover:bg-gray-50 text-gray-900'
+                        } shadow-lg border`}
+                    title="Historique des versions (Ctrl+H)"
+                >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </button>
+            </div>
         </div>
     );
 };

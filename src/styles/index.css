@@ -9,6 +9,65 @@ body {
     font-family: "Geologica", "Source Sans Pro", Helvetica, Arial, sans-serif;
 }
 
+/* Styles pour le drag & drop des catégories */
+.category-wrapper {
+    transition: all 0.2s ease;
+}
+
+.dragging-category {
+    transform: rotate(2deg);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+}
+
+.category-wrapper .category-drag-handle {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.category-wrapper:hover .category-drag-handle {
+    opacity: 1;
+}
+
+/* Mode sombre - corrections de contraste pour tous les inputs */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"], 
+.dark input[type="search"],
+.dark textarea,
+.dark select {
+    @apply bg-gray-800 border-gray-600 text-white placeholder-gray-400;
+}
+
+.dark input[type="text"]:focus,
+.dark input[type="email"]:focus,
+.dark input[type="password"]:focus,
+.dark input[type="search"]:focus,
+.dark textarea:focus,
+.dark select:focus {
+    @apply ring-blue-400 border-blue-400;
+}
+
+/* Correction pour les inputs avec background blanc forcé */
+.dark input[type="text"]:not([class*="bg-white"]),
+.dark input[type="email"]:not([class*="bg-white"]),
+.dark input[type="password"]:not([class*="bg-white"]),
+.dark input[type="search"]:not([class*="bg-white"]),
+.dark textarea:not([class*="bg-white"]),
+.dark select:not([class*="bg-white"]) {
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+    color: white !important;
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+}
+
+.dark input[type="text"]::placeholder,
+.dark input[type="email"]::placeholder,
+.dark input[type="password"]::placeholder,
+.dark input[type="search"]::placeholder,
+.dark textarea::placeholder {
+    color: rgb(156 163 175) !important; /* gray-400 */
+}
+
 /* Custom scrollbar styling for better aesthetics */
 .scrollbar-thin::-webkit-scrollbar {
     width: 8px;

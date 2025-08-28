@@ -187,48 +187,6 @@ const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, 
                     )}
                 </div>
             </div>
-
-            {/* Gérer les Tâches Individuelles */}
-            <div className="admin-section">
-                <h2 className="admin-section-title">Gérer les Tâches Individuelles</h2>
-                <div className="tasks-management">
-                    {mainTabs.map(tabName => {
-                        const tasks = appData[tabName] || [];
-                        if (tasks.length === 0) return null;
-
-                        return (
-                            <div key={tabName} className="tab-tasks-section">
-                                <h3 className="tab-tasks-title">Onglet: {tabName}</h3>
-                                <div className="tasks-list">
-                                    {tasks.map(task => (
-                                        <div key={task.id} className="task-management-item">
-                                            <div className="task-info">
-                                                <span className="task-name">{task.name}</span>
-                                                <span className="task-category">({task.category || 'Autres'})</span>
-                                            </div>
-                                            <div className="task-actions">
-                                                <button
-                                                    className="btn-rename"
-                                                    onClick={() => {
-                                                        const newName = prompt(`Nouveau nom pour la tâche "${task.name}":`, task.name);
-                                                        if (newName && newName !== task.name) {
-                                                            onRenameTask(task.id, newName);
-                                                        }
-                                                    }}
-                                                    title={`Renommer "${task.name}"`}
-                                                >
-                                                    ✏️ Renommer
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-
             {/* Ajouter un Nouvel Onglet */}
             <div className="admin-section">
                 <h3 className="admin-subsection-title">Ajouter un Nouvel Onglet</h3>
@@ -348,6 +306,49 @@ const PanneauAdmin = ({ appData, onAddTab, onAddTask, onRenameTab, onDeleteTab, 
                     </button>
                 </div>
             </div>
+
+            {/* Gérer les Tâches Individuelles */}
+            <div className="admin-section">
+                <h2 className="admin-section-title">Gérer les Tâches Individuelles</h2>
+                <div className="tasks-management">
+                    {mainTabs.map(tabName => {
+                        const tasks = appData[tabName] || [];
+                        if (tasks.length === 0) return null;
+
+                        return (
+                            <div key={tabName} className="tab-tasks-section">
+                                <h3 className="tab-tasks-title">Onglet: {tabName}</h3>
+                                <div className="tasks-list">
+                                    {tasks.map(task => (
+                                        <div key={task.id} className="task-management-item">
+                                            <div className="task-info">
+                                                <span className="task-name">{task.name}</span>
+                                                <span className="task-category">({task.category || 'Autres'})</span>
+                                            </div>
+                                            <div className="task-actions">
+                                                <button
+                                                    className="btn-rename"
+                                                    onClick={() => {
+                                                        const newName = prompt(`Nouveau nom pour la tâche "${task.name}":`, task.name);
+                                                        if (newName && newName !== task.name) {
+                                                            onRenameTask(task.id, newName);
+                                                        }
+                                                    }}
+                                                    title={`Renommer "${task.name}"`}
+                                                >
+                                                    ✏️ Renommer
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
+
         </div>
     )
 };

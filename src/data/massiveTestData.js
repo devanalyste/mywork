@@ -15,10 +15,7 @@ const generateRandomTasks = () => {
         'Sinistres',
         'Contrats',
         'Clients',
-        'Facturations',
-        'Juridique',
-        'Techniques',
-        'Archives'
+        'Facturations'
     ];
 
     const taskPrefixes = [

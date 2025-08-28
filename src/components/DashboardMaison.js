@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import '../styles/simple-controls.css';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import {
     DndContext,
     closestCenter,
@@ -17,14 +19,6 @@ import {
 import {
     CSS
 } from '@dnd-kit/utilities';
-
-// Utility function for array move (needed for drag and drop)
-const arrayMove = (array, from, to) => {
-    const newArray = [...array];
-    const item = newArray.splice(from, 1)[0];
-    newArray.splice(to, 0, item);
-    return newArray;
-};
 
 // Composant pour le sélecteur de vue
 const ViewSelector = ({ viewMode, onViewModeChange }) => {
@@ -57,64 +51,69 @@ const ViewSelector = ({ viewMode, onViewModeChange }) => {
     );
 };
 
-// Composant Task draggable avec dnd-kit
-const SortableTaskItem = ({ task, onTaskClick }) => {
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-        isDragging,
-    } = useSortable({ id: task.id });
-
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        opacity: isDragging ? 0.6 : 1,
-    };
-
+// Composant Task avec @hello-pangea/dnd (structure corrigée)
+const DraggableTaskItem = ({ task, onTaskClick, index, categoryName }) => {
     return (
-        <div
-            ref={setNodeRef}
-            style={style}
-            className={`task-item clickable compact grid-task ${isDragging ? 'dragging' : ''}`}
-            onClick={() => onTaskClick(task)}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onTaskClick(task);
-                }
-            }}
-            role="button"
-            tabIndex={0}
-            title="Glissez pour réorganiser"
-            aria-label={`Task: ${task.name}`}
+        <Draggable
+            draggableId={task.id}
+            index={index}
         >
-            <div className="task-content-compact">
-                <span
-                    className="drag-handle enhanced-handle compact-handle"
-                    title="Réorganiser"
-                    {...attributes}
-                    {...listeners}
+            {(provided, snapshot) => (
+                <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    className={`task-item clickable compact grid-task draggable-task ${snapshot.isDragging ? 'dragging' : ''
+                        }`}
+                    style={{
+                        ...provided.draggableProps.style,
+                        marginBottom: '8px',
+                        opacity: snapshot.isDragging ? 0.8 : 1,
+                        transform: snapshot.isDragging
+                            ? `${provided.draggableProps.style?.transform} rotate(2deg)`
+                            : provided.draggableProps.style?.transform,
+                        cursor: snapshot.isDragging ? 'grabbing' : 'grab'
+                    }}
+                    onClick={() => onTaskClick(task)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onTaskClick(task);
+                        }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    title="Glissez pour réorganiser ou cliquez pour ouvrir"
+                    aria-label={`Task: ${task.name}`}
                 >
-                    ⋮⋮
-                </span>
-                <div className="task-info">
-                    <span className="task-number">
-                        {task.fields?.find(f => f.key === 'modelNumber')?.value}
-                    </span>
-                    <span className="task-name-compact">
-                        {task.name}
-                    </span>
+                    <div className="task-content-simple">
+                        <div className="task-info">
+                            <span className="task-number">
+                                {task.fields?.find(f => f.key === 'modelNumber')?.value}
+                            </span>
+                            <span className="task-name-compact">
+                                {task.name}
+                            </span>
+                        </div>
+                        <div className="drag-indicator">
+                            ⋮⋮
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
+            )}
+        </Draggable>
     );
 };
 
-// Composant de grille libre pour une catégorie
-const CategoryFreeGrid = ({
+DraggableTaskItem.propTypes = {
+    task: PropTypes.object.isRequired,
+    onTaskClick: PropTypes.func.isRequired,
+    index: PropTypes.number.isRequired,
+    categoryName: PropTypes.string.isRequired
+};
+
+// Composant de grille avec @hello-pangea/dnd
+const CategoryDragDropGrid = ({
     category,
     tasks,
     isOpen,
@@ -123,9 +122,7 @@ const CategoryFreeGrid = ({
     onTaskClick,
     onReorderTasks,
     searchTerm,
-    gridColumns: _gridColumns = 1 // on capture la prop mais on ne l'utilise pas
 }) => {
-    const gridColumns = 1; // on force la valeur ici
     // Filtrer les tâches localement
     const filteredTasks = useMemo(() => {
         if (!searchTerm) return tasks;
@@ -140,49 +137,6 @@ const CategoryFreeGrid = ({
             );
         });
     }, [tasks, searchTerm, category]);
-
-    // Configuration des sensors pour dnd-kit
-    const sensors = useSensors(
-        useSensor(PointerSensor),
-        useSensor(KeyboardSensor, {
-            coordinateGetter: sortableKeyboardCoordinates,
-        })
-    );
-
-    // Gestion du drag end
-    const handleDragEnd = (event) => {
-        const { active, over } = event;
-
-        if (active.id !== over?.id) {
-            const oldIndex = filteredTasks.findIndex(task => task.id === active.id);
-            const newIndex = filteredTasks.findIndex(task => task.id === over.id);
-
-            if (oldIndex !== -1 && newIndex !== -1) {
-                const reorderedTasks = arrayMove(filteredTasks, oldIndex, newIndex);
-                onReorderTasks(category, reorderedTasks);
-            }
-        }
-    };
-
-    // Créer une grille simple
-    const createGrid = useMemo(() => {
-        // Calculer le nombre de lignes nécessaires
-        const taskCount = filteredTasks.length;
-        const rows = Math.ceil(taskCount / gridColumns);
-        const totalCells = rows * gridColumns;
-
-        // Créer un array pour la grille
-        const grid = Array(totalCells).fill(null);
-
-        // Placer les tâches dans la grille séquentiellement
-        filteredTasks.forEach((task, index) => {
-            if (index < totalCells) {
-                grid[index] = task;
-            }
-        });
-
-        return { grid, rows, totalCells };
-    }, [filteredTasks, gridColumns]);
 
     return (
         <div className="category-section" style={{ height: 'fit-content' }}>
@@ -213,56 +167,56 @@ const CategoryFreeGrid = ({
             </div>
 
             {isOpen && (
-                <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
+                <Droppable
+                    droppableId={category}
                 >
-                    <SortableContext
-                        items={filteredTasks.map(task => task.id)}
-                        strategy={verticalListSortingStrategy}
-                    >
+                    {(provided, snapshot) => (
                         <div
-                            className="tasks-free-grid"
+                            {...provided.droppableProps}
+                            ref={provided.innerRef}
+                            className={`tasks-dragdrop-grid ${snapshot.isDraggingOver ? 'drag-over' : ''}`}
                             style={{
-                                display: 'grid',
-                                gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
+                                display: 'flex',
+                                flexDirection: 'column',
                                 gap: '8px',
                                 padding: '16px',
-                                backgroundColor: 'white',
+                                backgroundColor: snapshot.isDraggingOver ? '#f0f9ff' : 'white',
                                 border: '1px solid #e5e7eb',
                                 borderTop: 'none',
                                 borderBottomLeftRadius: '8px',
                                 borderBottomRightRadius: '8px',
                                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                                maxHeight: '400px',
+                                maxHeight: 'calc(100vh - 300px)',
                                 overflowY: 'auto',
-                                zIndex: 10
+                                zIndex: 10,
+                                minHeight: '100px',
+                                transition: 'background-color 0.2s ease'
                             }}
                         >
-                            {createGrid.grid.map((task, gridPosition) => (
-                                <div key={`grid-cell-${gridPosition}`} className="grid-cell">
-                                    {task ? (
-                                        <SortableTaskItem
-                                            task={task}
-                                            onTaskClick={onTaskClick}
-                                        />
-                                    ) : (
-                                        <div className="empty-grid-cell">
-                                            {/* Cellule vide */}
-                                        </div>
-                                    )}
-                                </div>
+                            {filteredTasks.map((task, index) => (
+                                <DraggableTaskItem
+                                    key={task.id}
+                                    task={task}
+                                    index={index}
+                                    categoryName={category}
+                                    onTaskClick={onTaskClick}
+                                />
                             ))}
+                            {provided.placeholder}
+                            {filteredTasks.length === 0 && (
+                                <div className="empty-category text-center text-gray-500 py-4">
+                                    Aucune tâche dans cette catégorie
+                                </div>
+                            )}
                         </div>
-                    </SortableContext>
-                </DndContext>
+                    )}
+                </Droppable>
             )}
         </div>
     );
 };
 
-CategoryFreeGrid.propTypes = {
+CategoryDragDropGrid.propTypes = {
     category: PropTypes.string.isRequired,
     tasks: PropTypes.arrayOf(PropTypes.object).isRequired,
     isOpen: PropTypes.bool.isRequired,
@@ -270,8 +224,43 @@ CategoryFreeGrid.propTypes = {
     onToggleCategory: PropTypes.func.isRequired,
     onTaskClick: PropTypes.func.isRequired,
     onReorderTasks: PropTypes.func.isRequired,
-    searchTerm: PropTypes.string,
-    gridColumns: PropTypes.number
+    searchTerm: PropTypes.string
+};
+
+// Composant pour une catégorie avec @hello-pangea/dnd
+const DragDropCategory = ({
+    category,
+    isOpen,
+    isAdminMode,
+    onToggleCategory,
+    onTaskClick,
+    onReorderTasks,
+    searchTerm
+}) => {
+    return (
+        <div className="category-wrapper">
+            <CategoryDragDropGrid
+                category={category.name}
+                tasks={category.tasks}
+                isOpen={isOpen}
+                isAdminMode={isAdminMode}
+                onToggleCategory={onToggleCategory}
+                onTaskClick={onTaskClick}
+                onReorderTasks={onReorderTasks}
+                searchTerm={searchTerm}
+            />
+        </div>
+    );
+};
+
+DragDropCategory.propTypes = {
+    category: PropTypes.object.isRequired,
+    isOpen: PropTypes.bool.isRequired,
+    isAdminMode: PropTypes.bool,
+    onToggleCategory: PropTypes.func.isRequired,
+    onTaskClick: PropTypes.func.isRequired,
+    onReorderTasks: PropTypes.func.isRequired,
+    searchTerm: PropTypes.string
 };
 
 
@@ -289,6 +278,7 @@ const DashboardMaison = ({
 }) => {
     const [categoryStates, setCategoryStates] = useState({});
     const [searchTerm, setSearchTerm] = useState('');
+    const [categoryOrder, setCategoryOrder] = useState([]); // Nouvel état pour l'ordre des catégories
 
 
     // Données organisées par catégorie
@@ -316,25 +306,65 @@ const DashboardMaison = ({
             }
         });
 
-        return Array.from(categories.values())
-            .sort((a, b) => a.name.localeCompare(b.name));
-    }, [appData]);
+        const categoriesArray = Array.from(categories.values());
+
+        // Appliquer l'ordre personnalisé si défini, sinon tri alphabétique
+        if (categoryOrder.length > 0) {
+            const orderedCategories = [];
+            const remainingCategories = [...categoriesArray];
+
+            // D'abord, ajouter les catégories dans l'ordre personnalisé
+            categoryOrder.forEach(categoryName => {
+                const categoryIndex = remainingCategories.findIndex(cat => cat.name === categoryName);
+                if (categoryIndex !== -1) {
+                    orderedCategories.push(remainingCategories.splice(categoryIndex, 1)[0]);
+                }
+            });
+
+            // Ensuite, ajouter les nouvelles catégories non ordonnées
+            remainingCategories.sort((a, b) => a.name.localeCompare(b.name));
+            return [...orderedCategories, ...remainingCategories];
+        }
+
+        return categoriesArray.sort((a, b) => a.name.localeCompare(b.name));
+    }, [appData, categoryOrder]);
+
+    // Initialiser l'ordre des catégories au premier rendu
+    React.useEffect(() => {
+        if (categoryOrder.length === 0 && categoriesData.length > 0) {
+            setCategoryOrder(categoriesData.map(cat => cat.name));
+        }
+    }, [categoriesData, categoryOrder.length, setCategoryOrder]);
 
     const handleTaskClick = (task) => {
         onTabChange(task.tabName);
         onTaskSelect(task);
     };
 
+    // Fonctions pour gérer le drag & drop avec @hello-pangea/dnd
     const handleReorderTasks = (categoryName, reorderedTasks) => {
-        if (onReorderTasksInCategory) {
-            // Trouver les indices des tâches dans le tableau d'origine
-            const originalTasks = categoriesData.find(cat => cat.name === categoryName)?.tasks || [];
-            const sourceIndex = originalTasks.findIndex(task => task.id === reorderedTasks[0].id);
-            const targetIndex = reorderedTasks.findIndex(task => task.id === originalTasks[sourceIndex].id);
+        console.log('🔄 handleReorderTasks called with:', { categoryName, reorderedTasks });
 
-            onReorderTasksInCategory(categoryName, sourceIndex, targetIndex);
+        if (onReorderTasksInCategory && reorderedTasks.length > 0) {
+            // Approche directe : passer directement le nouveau tableau au parent
+            onReorderTasksInCategory(categoryName, reorderedTasks);
+            console.log('✅ Tasks reordered successfully');
+        } else {
+            console.log('❌ onReorderTasksInCategory not available or empty tasks');
         }
     };
+
+    // Charger l'ordre des catégories depuis localStorage au démarrage
+    React.useEffect(() => {
+        const savedOrder = localStorage.getItem('covalen-category-order');
+        if (savedOrder) {
+            try {
+                setCategoryOrder(JSON.parse(savedOrder));
+            } catch (error) {
+                console.warn('Erreur lors du chargement de l\'ordre des catégories:', error);
+            }
+        }
+    }, []);
 
     const getTotalTaskCount = () => {
         return filteredCategories.reduce((total, category) => total + category.tasks.length, 0);
@@ -432,13 +462,17 @@ const DashboardMaison = ({
 
         const handleDragEnd = (event) => {
             const { active, over } = event;
+            console.log('🔄 Kanban drag end:', { active: active.id, over: over?.id });
 
-            if (!over || active.id === over.id) return;
+            if (!over || active.id === over.id) {
+                console.log('❌ No valid drop target or same position');
+                return;
+            }
 
-            // Trouver la catégorie source et destination
+            // Trouver la catégorie source et la tâche déplacée
             let sourceCategory = null;
             let sourceIndex = -1;
-            let targetIndex = -1;
+            let movedTask = null;
 
             // Chercher la tâche source
             for (const category of filteredCategoriesData) {
@@ -446,28 +480,45 @@ const DashboardMaison = ({
                 if (taskIndex !== -1) {
                     sourceCategory = category.name;
                     sourceIndex = taskIndex;
+                    movedTask = category.tasks[taskIndex];
+                    console.log('✅ Found source:', { sourceCategory, sourceIndex, task: movedTask.name });
                     break;
                 }
             }
 
-            // Chercher la position cible
-            for (const category of filteredCategoriesData) {
-                const taskIndex = category.tasks.findIndex(task => task.id === over.id);
-                if (taskIndex !== -1 && category.name === sourceCategory) {
-                    targetIndex = taskIndex;
-                    break;
+            // Trouver la position cible dans la même catégorie
+            let targetIndex = -1;
+            const targetCategory = filteredCategoriesData.find(cat => cat.name === sourceCategory);
+
+            if (targetCategory) {
+                const overTaskIndex = targetCategory.tasks.findIndex(task => task.id === over.id);
+                if (overTaskIndex !== -1) {
+                    targetIndex = overTaskIndex;
+                    console.log('✅ Found target position:', targetIndex);
                 }
             }
 
-            if (sourceIndex !== -1 && targetIndex !== -1 && sourceCategory) {
-                onReorderTasksInCategory(sourceCategory, sourceIndex, targetIndex);
+            if (sourceIndex !== -1 && targetIndex !== -1 && sourceCategory && movedTask) {
+                // Créer le nouveau tableau de tâches (même logique que la grille)
+                const categoryTasks = targetCategory.tasks;
+                const newTasks = Array.from(categoryTasks);
+                newTasks.splice(sourceIndex, 1); // Retirer de l'ancienne position
+                newTasks.splice(targetIndex, 0, movedTask); // Insérer à la nouvelle position
+
+                console.log(`🎯 Moving "${movedTask.name}" from ${sourceIndex} to ${targetIndex} in ${sourceCategory}`);
+                console.log('📋 New tasks order:', newTasks.map(t => t.name));
+
+                // Utiliser la nouvelle fonction qui accepte le tableau complet
+                onReorderTasksInCategory(sourceCategory, newTasks);
+            } else {
+                console.log('❌ Could not complete drag:', { sourceIndex, targetIndex, sourceCategory, movedTask });
             }
         };
 
         return (
             <div className="w-full h-full kanban-view">
                 {/* Barre de tri pour Kanban */}
-                <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                <div className="p-3 mb-4 border border-gray-200 rounded-lg bg-gray-50">
                     <div className="flex items-center gap-4">
                         <span className="text-sm font-medium text-gray-700">Trier par:</span>
                         <button
@@ -578,13 +629,20 @@ const DashboardMaison = ({
                 ref={setNodeRef}
                 style={style}
                 {...attributes}
-                {...listeners}
-                className="p-3 transition-shadow bg-white border border-gray-200 rounded shadow-sm cursor-pointer kanban-card hover:shadow-md"
+                className="relative p-3 transition-shadow bg-white border border-gray-200 rounded shadow-sm cursor-pointer kanban-card hover:shadow-md"
                 onClick={(e) => {
                     e.stopPropagation();
                     onTaskClick(task);
                 }}
             >
+                {/* Zone de drag (handle) */}
+                <div
+                    {...listeners}
+                    className="absolute flex items-center justify-center w-6 h-6 bg-gray-100 rounded cursor-move top-1 right-1 hover:bg-gray-200"
+                    title="Glisser pour déplacer"
+                >
+                    <span className="text-xs text-gray-500">⋮⋮</span>
+                </div>
                 {/* Numéro de tâche */}
                 {modelNumber && (
                     <div className="mb-1 font-mono text-xs text-blue-600 task-number">
@@ -847,33 +905,67 @@ const DashboardMaison = ({
 
                 {/* Affichage conditionnel selon le mode */}
                 {viewMode === 'grid' && (
-                <div
-                    className="categories-container"
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(4, 1fr)',
-                        gap: '16px',
-                        width: '100%',
-                        gridAutoFlow: 'row dense',
-                        gridAutoRows: 'auto',
-                        alignItems: 'start'
-                    }}
-                >
-                    {filteredCategories.map(category => (
-                        <CategoryFreeGrid
-                            key={category.name}
-                            category={category.name}
-                            tasks={category.tasks}
-                            isOpen={categoryStates[category.name] ?? false}
-                            isAdminMode={isAdminMode}
-                            onToggleCategory={handleToggleCategory}
-                            onTaskClick={handleTaskClick}
-                            onReorderTasks={handleReorderTasks}
-                            searchTerm={searchTerm}
-                            gridColumns={1}
-                        />
-                    ))}
-                </div>
+                    <DragDropContext onDragEnd={(result) => {
+                        console.log('Drag end result:', result);
+
+                        // Vérifications de base
+                        if (!result.destination) {
+                            console.log('No destination - drop cancelled');
+                            return;
+                        }
+
+                        if (result.source.droppableId !== result.destination.droppableId) {
+                            console.log('Cross-category drop not allowed');
+                            return;
+                        }
+
+                        // Extraire le nom de catégorie depuis le droppableId (maintenant directement le nom)
+                        const categoryName = result.source.droppableId;
+                        const category = filteredCategories.find(cat => cat.name === categoryName);
+                        if (!category) {
+                            console.log('Category not found:', categoryName);
+                            return;
+                        }
+
+                        // Logique simple comme le test qui fonctionne
+                        const tasks = category.tasks;
+                        const newTasks = Array.from(tasks);
+                        const [reorderedTask] = newTasks.splice(result.source.index, 1);
+                        newTasks.splice(result.destination.index, 0, reorderedTask);
+
+                        console.log(`Moving task "${reorderedTask.name}" from ${result.source.index} to ${result.destination.index}`);
+                        console.log('Reordered tasks:', newTasks);
+
+                        handleReorderTasks(categoryName, newTasks);
+                    }}>
+                        <div
+                            className="categories-container"
+                            style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(4, 1fr)',
+                                gap: '16px',
+                                width: '100%',
+                                height: '100%',
+                                gridAutoFlow: 'row dense',
+                                gridAutoRows: 'auto',
+                                alignItems: 'start',
+                                alignContent: 'start'
+                            }}
+                        >
+                            {filteredCategories.map(category => (
+                                <DragDropCategory
+                                    key={category.name}
+                                    category={category}
+                                    isOpen={categoryStates[category.name] ?? false}
+                                    isAdminMode={isAdminMode}
+                                    onToggleCategory={handleToggleCategory}
+                                    onTaskClick={handleTaskClick}
+                                    onReorderTasks={handleReorderTasks}
+                                    searchTerm={searchTerm}
+                                />
+                            ))}
+                        </div>
+                    </DragDropContext>
                 )}
 
                 {viewMode === 'list' && (
@@ -892,7 +984,7 @@ const DashboardMaison = ({
                             categoriesData={filteredCategories}
                             searchTerm={searchTerm}
                             onTaskClick={handleTaskClick}
-                            onReorderTasksInCategory={handleReorderTasks}
+                            onReorderTasksInCategory={onReorderTasksInCategory}
                         />
                     </div>
                 )}
@@ -907,13 +999,14 @@ ViewSelector.propTypes = {
 };
 
 DashboardMaison.propTypes = {
-    categoriesData: PropTypes.array.isRequired,
-    isAdminMode: PropTypes.bool.isRequired,
-    onTaskClick: PropTypes.func.isRequired,
+    appData: PropTypes.object.isRequired,
+    onTabChange: PropTypes.func.isRequired,
+    onTaskSelect: PropTypes.func.isRequired,
     onAdminPanel: PropTypes.func.isRequired,
+    isAdminMode: PropTypes.bool.isRequired,
     onReorderTasksInCategory: PropTypes.func.isRequired,
-    categoryStates: PropTypes.object.isRequired,
-    onToggleCategory: PropTypes.func.isRequired,
+    viewMode: PropTypes.string,
+    onViewModeChange: PropTypes.func.isRequired,
 };
 
 export default DashboardMaison;

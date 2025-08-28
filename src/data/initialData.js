@@ -3,61 +3,134 @@ export const initialAppData = {
     Adjointes: [
         {
             id: '1',
-            name: 'Annulation non-paiement',
-            category: 'Annulations', // Nouvelle catégorie
+            name: 'Annulation renou non-requis FDM',
+            category: 'Annulations',
             fields: [
-                { key: 'modelNumber', label: 'Numéro de Modèle/Lettre', type: 'text', value: '405', adminOnlyEdit: true },
-                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: 'Lettre de non-paiement type 405', adminOnlyEdit: true, copyable: true }, // Nouveau champ
-                { key: 'attachmentName', label: 'Nom de Pièce Jointe', type: 'text', value: '2025-06-26 CSC - FDM non-paiement 405', adminOnlyEdit: false, copyable: true },
-                { key: 'noteTemplate', label: 'Note EPIC', type: 'textarea', value: 'CSC - FDM non-paiement 405 + doc', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
-                { key: 'procedure', label: 'Procédure à Suivre', type: 'textarea', value: '1. Vérifier le dossier client.\\n2. Envoyer le courriel de non-paiement.\\n3. Archiver la communication.\\n4. Mettre à jour le statut dans le système.', adminOnlyEdit: true, hasCheckboxes: true },
+                { key: 'modelNumber', label: 'Numéro de lettre', type: 'text', value: '402', adminOnlyEdit: true },
+                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: '402/CO Lettre FDM - Non-requis', adminOnlyEdit: true, copyable: true },
+                { key: 'noteTemplate', label: 'Note EPIC', type: 'textarea', value: 'CSC - FDM Non Renou par assureur 403 + doc', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'attachmentName', label: 'Nom de courriel', type: 'text', value: '2025.08.26 CSC Assurance - Annulation par assureur FDM', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'procedure', label: 'Procédure à Suivre', type: 'textarea', value: '1. Vérifier le dossier client.\\n2. Envoyer le courriel d\'annulation.\\n3. Archiver la communication.\\n4. Mettre à jour le statut dans le système.', adminOnlyEdit: true, hasCheckboxes: true },
             ],
         },
         {
             id: '2',
-            name: 'Avis d\\\'annulation + FDM',
-            category: 'Annulations', // Nouvelle catégorie
+            name: 'Annulation non-requis par assureur FDM',
+            category: 'Annulations',
             fields: [
-                { key: 'modelNumber', label: 'Numéro de Modèle/Lettre', type: 'text', value: '405+FDM', adminOnlyEdit: true },
-                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: 'Avis d\\\'annulation et Fin de Mandat', adminOnlyEdit: true, copyable: true }, // Nouveau champ
-                { key: 'attachmentName', label: 'Nom de Pièce Jointe', type: 'text', value: '2025-06-26 CSC - Annulation non-paiement + FDM', adminOnlyEdit: false, copyable: true },
-                { key: 'noteTemplate', label: 'Note EPIC', type: 'textarea', value: 'CSC - Annulation non-paiement + FDM + Doc', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
-                { key: 'procedure', label: 'Procédure à Suivre', type: 'textarea', value: 'Procédure spécifique pour l\\\'avis d\\\'annulation avec fin de mandat.', adminOnlyEdit: true, hasCheckboxes: true },
+                { key: 'modelNumber', label: 'Numéro de lettre', type: 'text', value: '403', adminOnlyEdit: true },
+                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: '403/CO Lettre FDM - Non-REN par Assureur', adminOnlyEdit: true, copyable: true },
+                { key: 'noteTemplate', label: 'Note EPIC', type: 'textarea', value: 'CSC - FDM Non Renou par assureur 403 + doc', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'attachmentName', label: 'Nom de courriel', type: 'text', value: '2025.08.26 CSC Assurance - Annulation par assureur FDM', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'procedure', label: 'Procédure à Suivre', type: 'textarea', value: '1. Vérifier le dossier client.\\n2. Envoyer le courriel d\'annulation.\\n3. Archiver la communication.\\n4. Mettre à jour le statut dans le système.', adminOnlyEdit: true, hasCheckboxes: true },
+            ],
+        },
+        {
+            id: '8',
+            name: 'Annulation cours terme FDM',
+            category: 'Annulations',
+            fields: [
+                { key: 'modelNumber', label: 'Numéro de lettre', type: 'text', value: '404', adminOnlyEdit: true },
+                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: '404/CO Lettre FDM - Court terme', adminOnlyEdit: true, copyable: true },
+                { key: 'noteTemplate', label: 'Note EPIC', type: 'textarea', value: 'CSC - FDM court terme 404 + doc', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'attachmentName', label: 'Nom de courriel', type: 'text', value: '2025.08.26 CSC Assurance - Annulation FDM', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'procedure', label: 'Procédure à Suivre', type: 'textarea', value: '1. Vérifier le dossier client.\\n2. Envoyer le courriel d\'annulation.\\n3. Archiver la communication.\\n4. Mettre à jour le statut dans le système.', adminOnlyEdit: true, hasCheckboxes: true },
+            ],
+        },
+        {
+            id: '9',
+            name: 'Annulation non-paiement FDM',
+            category: 'Annulations',
+            fields: [
+                { key: 'modelNumber', label: 'Numéro de lettre', type: 'text', value: '405', adminOnlyEdit: true },
+                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: '405/CO Lettre FDM - Non-paiement', adminOnlyEdit: true, copyable: true },
+                { key: 'noteTemplate', label: 'Note EPIC', type: 'textarea', value: 'CSC - FDM non-paiement 405 + doc', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'attachmentName', label: 'Nom de courriel', type: 'text', value: '2025.08.26 CSC Assurance - Annulation FDM', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'procedure', label: 'Procédure à Suivre', type: 'textarea', value: '1. Vérifier le dossier client.\\n2. Envoyer le courriel d\'annulation.\\n3. Archiver la communication.\\n4. Mettre à jour le statut dans le système.', adminOnlyEdit: true, hasCheckboxes: true },
+            ],
+        },
+        {
+            id: '10',
+            name: 'Annulation court terme par assureur FDM',
+            category: 'Annulations',
+            fields: [
+                { key: 'modelNumber', label: 'Numéro de lettre', type: 'text', value: '406', adminOnlyEdit: true },
+                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: '406/CO Lettre FDM - Court Terme par Assureur', adminOnlyEdit: true, copyable: true },
+                { key: 'noteTemplate', label: 'Note EPIC', type: 'textarea', value: 'CSC - ANN court terme par assureur 406 + FDM', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'attachmentName', label: 'Nom de courriel', type: 'text', value: '', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'procedure', label: 'Procédure à Suivre', type: 'textarea', value: '1. Vérifier le dossier client.\\n2. Envoyer le courriel d\'annulation.\\n3. Archiver la communication.\\n4. Mettre à jour le statut dans le système.', adminOnlyEdit: true, hasCheckboxes: true },
+            ],
+        },
+        {
+            id: '11',
+            name: 'Annulation non-requis CIME - Rappel',
+            category: 'Annulations',
+            fields: [
+                { key: 'modelNumber', label: 'Numéro de lettre', type: 'text', value: '408', adminOnlyEdit: true },
+                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: '408/CO Lettre FDM – CIME', adminOnlyEdit: true, copyable: true },
+                { key: 'noteTemplate', label: 'Note EPIC', type: 'textarea', value: 'CSC - lettre FDM Cime', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'attachmentName', label: 'Nom de courriel', type: 'text', value: '2025.08.26 CSC Assurance de remplacement - FDM Cime', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'procedure', label: 'Procédure à Suivre', type: 'textarea', value: '1. Vérifier le dossier client.\\n2. Envoyer le courriel d\'annulation.\\n3. Archiver la communication.\\n4. Mettre à jour le statut dans le système.', adminOnlyEdit: true, hasCheckboxes: true },
+            ],
+        },
+        {
+            id: '12',
+            name: 'Avis d\'annulation & FDM',
+            category: 'Annulations',
+            fields: [
+                { key: 'modelNumber', label: 'Numéro de lettre', type: 'text', value: '410', adminOnlyEdit: true },
+                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: '410/CO Lettre Avis ANN non-paiement', adminOnlyEdit: true, copyable: true },
+                { key: 'noteTemplate', label: 'Note EPIC', type: 'textarea', value: 'CSC - Avis d\'annulation non-paiement 410 + FDM + doc', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'attachmentName', label: 'Nom de courriel', type: 'text', value: '2025.08.26 Avis d\'annulation non-paiement + FDM', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'procedure', label: 'Procédure à Suivre', type: 'textarea', value: '1. Vérifier le dossier client.\\n2. Envoyer le courriel d\'annulation.\\n3. Archiver la communication.\\n4. Mettre à jour le statut dans le système.', adminOnlyEdit: true, hasCheckboxes: true },
             ],
         },
         {
             id: '3',
             name: 'Dernier rappel de paiement',
-            category: 'Rappels', // Nouvelle catégorie
+            category: 'Rappels',
             fields: [
-                { key: 'modelNumber', label: 'Numéro de Modèle/Lettre', type: 'text', value: '001', adminOnlyEdit: true },
-                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: 'Lettre de dernier rappel 001', adminOnlyEdit: true, copyable: true }, // Nouveau champ
-                { key: 'attachmentName', label: 'Nom de Pièce Jointe', type: 'text', value: '2025-06-26 CSC Assurance - Dernier rappel de paiement', adminOnlyEdit: false, copyable: true },
-                { key: 'noteTemplate', label: 'Note EPIC', type: 'textarea', value: 'CSC - Dernier rappel de paiement 001 + doc', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'modelNumber', label: 'Numéro de lettre', type: 'text', value: '001', adminOnlyEdit: true },
+                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: '001/CO Dernier avis de paiement (Direct)', adminOnlyEdit: true, copyable: true },
+                { key: 'noteTemplate', label: 'Note EPIC', type: 'textarea', value: 'CSC - Lettre dernier rappel de paiement 001 + doc', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'attachmentName', label: 'Nom de courriel', type: 'text', value: '2025.08.26 CSC Assurance - Dernier rappel de paiement', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
                 { key: 'procedure', label: 'Procédure à Suivre', type: 'textarea', value: 'Procédure pour le dernier rappel de paiement.', adminOnlyEdit: true, hasCheckboxes: true },
             ],
         },
         {
             id: '4',
             name: 'Rappel de paiement',
-            category: 'Rappels', // Nouvelle catégorie
+            category: 'Rappels',
             fields: [
-                { key: 'modelNumber', label: 'Numéro de Modèle/Lettre', type: 'text', value: '002', adminOnlyEdit: true },
-                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: 'Lettre de rappel 002', adminOnlyEdit: true, copyable: true }, // Nouveau champ
-                { key: 'attachmentName', label: 'Nom de Pièce Jointe', type: 'text', value: '2025-06-26 CSC - Rappel de paiement 002', adminOnlyEdit: false, copyable: true },
+                { key: 'modelNumber', label: 'Numéro de lettre', type: 'text', value: '002', adminOnlyEdit: true },
+                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: '002/CO Avis de rappel de paiement (Direct)', adminOnlyEdit: true, copyable: true },
                 { key: 'noteTemplate', label: 'Note EPIC', type: 'textarea', value: 'CSC - Rappel de paiement 002 + doc', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'attachmentName', label: 'Nom de courriel', type: 'text', value: '2025.08.26 CSC Assurance - Rappel de paiement', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
                 { key: 'procedure', label: 'Procédure à Suivre', type: 'textarea', value: 'Procédure pour le rappel de paiement.', adminOnlyEdit: true, hasCheckboxes: true },
             ],
         },
         {
             id: '5',
-            name: 'Avis d\\\'provision insuffisante',
-            category: 'Provisions', // Nouvelle catégorie
+            name: 'Avis de provision insuffisante',
+            category: 'Rappels',
             fields: [
-                { key: 'modelNumber', label: 'Numéro de Modèle/Lettre', type: 'text', value: '003', adminOnlyEdit: true },
-                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: 'Avis d\\\'provision insuffisante 003', adminOnlyEdit: true, copyable: true }, // Nouveau champ
-                { key: 'attachmentName', label: 'Nom de Pièce Jointe', type: 'text', value: '2025-06-09 CSC Assurance - Avis d\\\'provision insuffisante', adminOnlyEdit: false, copyable: true },
+                { key: 'modelNumber', label: 'Numéro de lettre', type: 'text', value: '003', adminOnlyEdit: true },
+                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: '003/CO Avis de provision insuffisante', adminOnlyEdit: true, copyable: true },
                 { key: 'noteTemplate', label: 'Note EPIC', type: 'textarea', value: 'CSC - Avis de provision insuffisante 003 + doc', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'attachmentName', label: 'Nom de courriel', type: 'text', value: '2025.08.26 CSC Assurance - Avis de provision insuffisante', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'procedure', label: 'Procédure à Suivre', type: 'textarea', value: 'Procédure pour l\'avis de provision insuffisante.', adminOnlyEdit: true, hasCheckboxes: true },
+            ],
+        },
+        {
+            id: '6',
+            name: 'Avis d\'annulation & FDM',
+            category: 'Rappels',
+            fields: [
+                { key: 'modelNumber', label: 'Numéro de lettre', type: 'text', value: '410', adminOnlyEdit: true },
+                { key: 'fullTemplateName', label: 'Modèle de lettre', type: 'text', value: '410/CO Lettre Avis ANN non-paiement', adminOnlyEdit: true, copyable: true },
+                { key: 'noteTemplate', label: 'Note EPIC', type: 'textarea', value: 'CSC - Avis d\'annulation non-paiement 410 + FDM + doc', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'attachmentName', label: 'Nom de courriel', type: 'text', value: '2025.08.26 Avis d\'annulation non-paiement + FDM', adminOnlyEdit: false, copyable: true, specialButton: 'addDate' },
+                { key: 'procedure', label: 'Procédure à Suivre', type: 'textarea', value: 'Procédure pour l\'avis d\'annulation avec fin de mandat.', adminOnlyEdit: true, hasCheckboxes: true },
             ],
         },
     ],

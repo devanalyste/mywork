@@ -1,0 +1,235 @@
+/* Styles pour @hello-pangea/dnd - structure simplifiée */
+.draggable-task {
+    position: relative;
+    transition: all 0.2s ease;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.draggable-task:active {
+    cursor: grabbing;
+}
+
+.draggable-task.dragging {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    border: 2px solid #3b82f6;
+    background: #fefefe;
+    z-index: 1000;
+}
+
+.draggable-task:hover:not(.dragging) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    border-color: #3b82f6;
+}
+
+.task-content-simple {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.drag-indicator {
+    color: #9ca3af;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 4px;
+    transition: color 0.2s ease;
+}
+
+.draggable-task:hover .drag-indicator {
+    color: #3b82f6;
+}
+
+.draggable-task.dragging .drag-indicator {
+    color: #1d4ed8;
+}
+
+.task-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0; /* Pour permettre l'ellipsis */
+}
+
+.task-number {
+    font-size: 11px;
+    color: #6b7280;
+    font-family: monospace;
+    font-weight: 600;
+}
+
+.task-name-compact {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+    line-height: 1.3;
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.tasks-dragdrop-grid {
+    position: relative;
+    min-height: 60px;
+}
+
+.tasks-dragdrop-grid.drag-over {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe) !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+.empty-category {
+    font-style: italic;
+    padding: 20px;
+    text-align: center;
+    color: #9ca3af;
+    border: 2px dashed #e5e7eb;
+    border-radius: 8px;
+    margin: 8px 0;
+}
+
+/* Animation pour les changements d'ordre avec @hello-pangea/dnd */
+.draggable-task {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* États de focus pour l'accessibilité */
+.draggable-task:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Indicateur de zone de drop */
+.tasks-dragdrop-grid {
+    transition: all 0.2s ease;
+}
+
+.tasks-dragdrop-grid::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px dashed transparent;
+    border-radius: 8px;
+    pointer-events: none;
+    transition: all 0.2s ease;
+}
+
+.tasks-dragdrop-grid.drag-over::before {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.05);
+}
+
+/* Styles responsifs */
+@media (max-width: 768px) {
+    .draggable-task {
+        padding: 10px;
+    }
+
+    .task-name-compact {
+        font-size: 13px;
+    }
+
+    .drag-indicator {
+        font-size: 14px;
+    }
+}
+
+/* Styles pour les anciens contrôles (conservés pour compatibilité) */
+.simple-task {
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.simple-task:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.task-content-compact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+}
+
+.task-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-right: 8px;
+}
+
+.move-btn {
+    width: 24px;
+    height: 20px;
+    border: 1px solid #d1d5db;
+    background: #f9fafb;
+    color: #374151;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.move-btn:hover:not(.disabled) {
+    background: #3b82f6;
+    color: white;
+    border-color: #2563eb;
+    transform: scale(1.1);
+}
+
+.move-btn:active:not(.disabled) {
+    transform: scale(0.95);
+}
+
+.move-btn.disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.move-btn.move-up:hover:not(.disabled) {
+    background: #10b981;
+    border-color: #059669;
+}
+
+.move-btn.move-down:hover:not(.disabled) {
+    background: #f59e0b;
+    border-color: #d97706;
+}
+
+.tasks-simple-grid {
+    background: linear-gradient(to bottom, #ffffff, #f8fafc);
+}
+
+.move-btn:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.simple-task:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
